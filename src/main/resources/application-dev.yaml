@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/book_social_network
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  application:
+    security:
+      jwt:
+        secret-key: HVH1a4Pke93rIXnnghrd4PeVnOC715IIbGUwowbt8+w=
+        expiration: 8640000
+    mailing:
+      frontend:
+        activation-url: http://localhost:4200/activate-account

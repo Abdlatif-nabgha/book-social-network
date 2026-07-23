@@ -1,0 +1,29 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 50MB
+  mail:
+    host: localhost
+    port: 1025
+    username: dan
+    password: dan
+    properties:
+      mail:
+        smtp:
+          auth: true
+          trust: "*"
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+springdoc:
+  default-produces-media-type: application/json
+
+server:
+  servlet:
+    context-path: /api/v1/
