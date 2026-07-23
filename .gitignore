@@ -14,7 +14,6 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
-.agents
 *.iws
 *.iml
 *.ipr
@@ -34,4 +33,7 @@ build/
 
 # Local environment variables
 .env
+
+# Codebuff agents
+.agents
 
