@@ -1,5 +1,6 @@
 package com.nabgha.book.book;
 
+import com.nabgha.book.history.BookTransactionHistory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,6 +31,18 @@ public class BookMapper {
                 .rate(request.getRate())
                 .ownerId(request.getOwner().getId())
                 .owner(request.getOwner().fullName())
+                .build();
+    }
+
+    public BorrowedBookResponse toBorrowedBookResponse(BookTransactionHistory history) {
+        return BorrowedBookResponse.builder()
+                .id(history.getBook().getId())
+                .title(history.getBook().getTitle())
+                .isbn(history.getBook().getIsbn())
+                .author(history.getBook().getAuthor())
+                .rate(history.getBook().getRate())
+                .returned(history.isReturned())
+                .returnedApproved(history.isReturnedApproved())
                 .build();
     }
 }

@@ -1,6 +1,8 @@
 package com.nabgha.book.book;
 
 import com.nabgha.book.common.PageResponse;
+import com.nabgha.book.history.BookTransactionHistory;
+import com.nabgha.book.history.BookTransactionHistoryRepository;
 import com.nabgha.book.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class BookService {
 
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
+    private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
 
     @Transactional
     public BookResponse save(BookRequest request, User connectedUser) {
@@ -65,7 +68,7 @@ public class BookService {
     }
 
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, User user) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
         Page<Book> books = bookRepository.findAll(withOwnerId(user.getId()), pageable);
 
         List<BookResponse> bookResponses = books.stream()
@@ -80,6 +83,26 @@ public class BookService {
                 books.getTotalPages(),
                 books.isFirst(),
                 books.isLast()
+        );
+    }
+
+    public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, User user) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
+
+        Page<BookTransactionHistory> allBorrowedBooks = bookTransactionHistoryRepository.findAllBorrowedBooks(pageable, user.getId());
+
+        List<BorrowedBookResponse> bookResponses = allBorrowedBooks.stream()
+                .map(bookMapper::toBorrowedBookResponse)
+                .toList();
+
+        return new PageResponse<>(
+                bookResponses,
+                allBorrowedBooks.getNumber(),
+                allBorrowedBooks.getSize(),
+                allBorrowedBooks.getTotalElements(),
+                allBorrowedBooks.getTotalPages(),
+                allBorrowedBooks.isFirst(),
+                allBorrowedBooks.isLast()
         );
     }
 }
