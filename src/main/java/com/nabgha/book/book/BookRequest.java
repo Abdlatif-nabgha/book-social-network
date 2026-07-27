@@ -1,0 +1,22 @@
+package com.nabgha.book.book;
+
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record BookRequest(
+        @NotNull(message = "100")
+        @NotBlank(message = "100")
+        String title,
+        @NotNull(message = "101")
+        @NotBlank(message = "101")
+        String author,
+        @NotNull(message = "102")
+        @NotBlank(message = "102")
+        String isbn,
+        @NotNull(message = "103")
+        @NotBlank(message = "103")
+        String synopsis,
+        boolean shareable
+) {
+}

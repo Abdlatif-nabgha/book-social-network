@@ -25,7 +25,7 @@ public class AuthController {
             @RequestBody @Valid RegisterRequest request
     ) throws MessagingException {
         UserDto user = service.register(request);
-        URI location = URI.create("/api/v1/auth/register" + user.id());
+        URI location = URI.create("/api/v1/auth/register/" + user.id());
         return ResponseEntity
                 .created(location)
                 .body(ApiResponse.of("User registered successfully", user));
