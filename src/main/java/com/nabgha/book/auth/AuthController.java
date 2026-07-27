@@ -39,7 +39,9 @@ public class AuthController {
     }
 
     @GetMapping("/activate-account")
-    public ResponseEntity<ApiResponse<Void>> confirm(@RequestParam String token) throws MessagingException {
+    public ResponseEntity<ApiResponse<Void>> confirm(
+            @RequestParam String token
+    ) throws MessagingException {
         service.activateAccount(token);
         return ResponseEntity
                 .ok(ApiResponse.of("Account activated successfully", null));

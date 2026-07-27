@@ -15,17 +15,14 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@ToString
 public class BookTransactionHistory extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @ToString.Exclude
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "book_id")
-    @ToString.Exclude
     private Book book;
 
     private boolean returned;

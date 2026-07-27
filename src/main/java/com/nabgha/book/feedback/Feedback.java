@@ -8,7 +8,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @SuperBuilder
-@ToString
 public class Feedback extends BaseEntity {
 
     private Double note;
@@ -16,7 +15,6 @@ public class Feedback extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "book_id")
-    @ToString.Exclude
     private Book book;
 
 }
