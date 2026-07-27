@@ -38,7 +38,7 @@ public class Book extends BaseEntity {
     @OneToMany(mappedBy = "book",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Feedback> feedbacks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "book")
     private List<BookTransactionHistory> histories = new ArrayList<>();
 
     @Transient

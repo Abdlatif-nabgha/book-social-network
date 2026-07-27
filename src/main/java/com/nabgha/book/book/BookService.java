@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.nabgha.book.book.BookSpecification.withOwnerId;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,7 +25,7 @@ public class BookService {
 
     @Transactional
     public BookResponse save(BookRequest request, User connectedUser) {
-        // Authentication connectedUser
+        // Authentication connectedUser -> another choice
         //User user = ((User) connectedUser.getPrincipal());
         Book book = bookMapper.toBook(request);
         book.setOwner(connectedUser);
@@ -39,15 +41,37 @@ public class BookService {
 
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, User user) {
-        // 1.
+        // 1. Create a Pageable object with pagination parameters (page, size) sorted by creation date in descending order
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
-        // 2.
+        
+        // 2. Fetch all displayable books from the database filtered by the current user's ID
         Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
-        // 3.
+        
+        // 3. Convert each Book entity to BookResponse DTO using the mapper and collect into a list
         List<BookResponse> bookResponses = books.stream()
                 .map(bookMapper::toBookDto)
                 .toList();
-        // 4.
+        
+        // 4. Build and return a PageResponse wrapper containing the book responses and pagination metadata
+        return new PageResponse<>(
+                bookResponses,
+                books.getNumber(),
+                books.getSize(),
+                books.getTotalElements(),
+                books.getTotalPages(),
+                books.isFirst(),
+                books.isLast()
+        );
+    }
+
+    public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, User user) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Book> books = bookRepository.findAll(withOwnerId(user.getId()), pageable);
+
+        List<BookResponse> bookResponses = books.stream()
+                .map(bookMapper::toBookDto)
+                .toList();
+
         return new PageResponse<>(
                 bookResponses,
                 books.getNumber(),
