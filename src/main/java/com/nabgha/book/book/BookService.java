@@ -1,6 +1,7 @@
 package com.nabgha.book.book;
 
 import com.nabgha.book.common.PageResponse;
+import com.nabgha.book.exception.OperationNotPermittedException;
 import com.nabgha.book.history.BookTransactionHistory;
 import com.nabgha.book.history.BookTransactionHistoryRepository;
 import com.nabgha.book.user.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.nabgha.book.book.BookSpecification.withOwnerId;
 
@@ -104,5 +106,49 @@ public class BookService {
                 allBorrowedBooks.isFirst(),
                 allBorrowedBooks.isLast()
         );
+    }
+
+    public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, User user) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
+
+        Page<BookTransactionHistory> allBorrowedBooks = bookTransactionHistoryRepository.findAllReturnedBooks(pageable, user.getId());
+
+        List<BorrowedBookResponse> bookResponses = allBorrowedBooks.stream()
+                .map(bookMapper::toBorrowedBookResponse)
+                .toList();
+
+        return new PageResponse<>(
+                bookResponses,
+                allBorrowedBooks.getNumber(),
+                allBorrowedBooks.getSize(),
+                allBorrowedBooks.getTotalElements(),
+                allBorrowedBooks.getTotalPages(),
+                allBorrowedBooks.isFirst(),
+                allBorrowedBooks.isLast()
+        );
+    }
+
+    @Transactional
+    public BookResponse updateShareableStatus(Integer bookId, User user) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: "+bookId));
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
+            throw new OperationNotPermittedException("You cannot update others books shareable status ");
+        }
+        book.setShareable(!book.isShareable());
+        bookRepository.save(book);
+        return bookMapper.toBookDto(book);
+    }
+
+    @Transactional
+    public BookResponse updateArchivedStatus(Integer bookId, User user) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: "+bookId));
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
+            throw new OperationNotPermittedException("You cannot update others books archived status ");
+        }
+        book.setArchived(!book.isArchived());
+        bookRepository.save(book);
+        return bookMapper.toBookDto(book);
     }
 }

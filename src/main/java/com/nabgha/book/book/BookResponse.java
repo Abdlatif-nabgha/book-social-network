@@ -1,6 +1,5 @@
 package com.nabgha.book.book;
 
-import com.nabgha.book.user.User;
 import lombok.Builder;
 
 @Builder

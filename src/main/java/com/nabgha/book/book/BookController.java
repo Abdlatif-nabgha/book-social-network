@@ -64,4 +64,29 @@ class BookController {
     ) {
         return ResponseEntity.ok(bookService.findAllBorrowedBooks(page, size, connectedUser));
     }
+
+    @GetMapping("/returned")
+    public ResponseEntity<PageResponse<BorrowedBookResponse>> findAllReturnedBooks(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @AuthenticationPrincipal User connectedUser
+    ) {
+        return ResponseEntity.ok(bookService.findAllReturnedBooks(page, size, connectedUser));
+    }
+
+    @PatchMapping("/shareable/{bookId}")
+    public ResponseEntity<ApiResponse<BookResponse>> updateShareableStatus(
+            @PathVariable("bookId") Integer bookId,
+            @AuthenticationPrincipal User connectedUser
+    ) {
+        return ResponseEntity.ok(ApiResponse.of("Book status updated successfully",bookService.updateShareableStatus(bookId, connectedUser)));
+    }
+
+    @PatchMapping("/archived/{bookId}")
+    public ResponseEntity<ApiResponse<BookResponse>> updateArchivedStatus(
+            @PathVariable("bookId") Integer bookId,
+            @AuthenticationPrincipal User user
+    ){
+        return ResponseEntity.ok(ApiResponse.of("Book archive status updated", bookService.updateArchivedStatus(bookId, user)));
+    }
 }
