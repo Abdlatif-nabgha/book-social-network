@@ -89,4 +89,28 @@ class BookController {
     ){
         return ResponseEntity.ok(ApiResponse.of("Book archive status updated", bookService.updateArchivedStatus(bookId, user)));
     }
+
+    @PostMapping("/borrow/{bookId}")
+    public ResponseEntity<ApiResponse<BorrowedBookResponse>> borrowBook(
+            @PathVariable Integer bookId,
+            @AuthenticationPrincipal User connectedUser
+    ){
+        return ResponseEntity.ok(ApiResponse.of("You borrow this book", bookService.borrowBook(bookId, connectedUser)));
+    }
+
+    @PatchMapping("/borrow/return/{bookId}")
+    public ResponseEntity<ApiResponse<BorrowedBookResponse>> returnBorrowedBook(
+            @PathVariable Integer bookId,
+            @AuthenticationPrincipal User connectedUser
+    ) {
+        return ResponseEntity.ok(ApiResponse.of("Book returned successfully", bookService.returnBorrowedBook(bookId, connectedUser)));
+    }
+
+    @PatchMapping("/borrow/return/approve/{bookId}")
+    public ResponseEntity<ApiResponse<BorrowedBookResponse>> approveReturnBorrowedBook(
+            @PathVariable Integer bookId,
+            @AuthenticationPrincipal User connectedUser
+    ) {
+        return ResponseEntity.ok(ApiResponse.of("Book return approved", bookService.approveReturnBorrowedBook(bookId, connectedUser)));
+    }
 }

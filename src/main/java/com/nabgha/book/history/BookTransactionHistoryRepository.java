@@ -1,9 +1,12 @@
 package com.nabgha.book.history;
 
+import com.nabgha.book.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 
 
 public interface BookTransactionHistoryRepository extends JpaRepository<BookTransactionHistory, Integer> {
@@ -22,4 +25,32 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
         AND history.returned = true
         """)
     Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, Integer userId);
+
+    @Query("""
+        SELECT
+        (COUNT(*) > 0) AS isBorrowed
+        FROM BookTransactionHistory bookTransactionHistory
+        WHERE bookTransactionHistory.book.id = :bookId
+        AND bookTransactionHistory.returnedApproved = false
+        """)
+    boolean isAlreadyBorrowedByOtherUser(Integer bookId);
+
+    @Query("""
+            SELECT transaction
+            FROM BookTransactionHistory transaction
+            WHERE transaction.user.id = :userId
+            AND transaction.book.id = :bookId
+            AND transaction.returned = false
+            AND transaction.returnedApproved = false
+            """)
+    Optional<BookTransactionHistory> findByBookIdAndUserId(Integer bookId, Integer userId);
+
+    @Query("""
+    SELECT history
+    FROM BookTransactionHistory history
+    WHERE history.book.id = :bookId
+    AND history.book.owner.id = :ownerId
+    AND history.returned = true
+    """)
+    Optional<BookTransactionHistory> findByBookIdAndOwnerId(Integer bookId, Integer ownerId);
 }
