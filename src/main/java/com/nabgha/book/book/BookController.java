@@ -3,13 +3,16 @@ package com.nabgha.book.book;
 import com.nabgha.book.common.ApiResponse;
 import com.nabgha.book.common.PageResponse;
 import com.nabgha.book.user.User;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
@@ -28,7 +31,8 @@ class BookController {
             @AuthenticationPrincipal User connectedUser
             ) {
         BookResponse book = bookService.save(request, connectedUser);
-        URI location = URI.create("/api/v1/books/" + book.id());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(book.id()).toUri();
         return ResponseEntity.created(location)
                 .body(ApiResponse.of("Book added successfully", book));
     }
@@ -113,4 +117,27 @@ class BookController {
     ) {
         return ResponseEntity.ok(ApiResponse.of("Book return approved", bookService.approveReturnBorrowedBook(bookId, connectedUser)));
     }
+
+    @PostMapping(value = "/cover/{bookId}", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<?>> uploadBookCoverPicture(
+            @PathVariable("bookId") Integer bookId,
+            @Parameter()
+            @RequestPart("file") MultipartFile file,
+            @AuthenticationPrincipal User connectedUser
+    ) {
+        bookService.uploadBookCoverPicture(file, connectedUser, bookId);
+        URI location = URI.create("/books/" + bookId);
+        return ResponseEntity.created(location).body(ApiResponse.of("Image uploaded successfully", null));
+    }
+
+    @GetMapping("/cover/{bookId}")
+    public ResponseEntity<byte[]> downloadBookCoverPicture(
+            @PathVariable Integer bookId
+    ) {
+        byte[] cover = bookService.getBookCover(bookId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(cover);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.nabgha.book.book;
 
 import com.nabgha.book.common.PageResponse;
 import com.nabgha.book.exception.OperationNotPermittedException;
+import com.nabgha.book.file.FileStorageService;
 import com.nabgha.book.history.BookTransactionHistory;
 import com.nabgha.book.history.BookTransactionHistoryRepository;
 import com.nabgha.book.user.User;
@@ -13,7 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +32,7 @@ public class BookService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
     private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
+    private final FileStorageService fileStorageService;
 
     @Transactional
     public BookResponse save(BookRequest request, User connectedUser) {
@@ -219,5 +225,40 @@ public class BookService {
         bookTransactionHistory.setReturnedApproved(true);
         BookTransactionHistory history = bookTransactionHistoryRepository.save(bookTransactionHistory);
         return bookMapper.toBorrowedBookResponse(history);
+    }
+
+    @Transactional
+    public void uploadBookCoverPicture(MultipartFile file, User user, Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: " + bookId));
+
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
+            throw new OperationNotPermittedException("You cannot upload a cover for a book you don't own");
+        }
+
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File cannot be empty");
+        }
+
+        var bookCover = fileStorageService.saveFile(file, user.getId());
+        if (bookCover == null) {
+            throw new IllegalStateException("Failed to store the book cover file");
+        }
+
+        book.setBookCover(bookCover);
+        bookRepository.save(book);
+    }
+
+    public byte[] getBookCover(Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: " + bookId));
+        if (book.getBookCover() == null) {
+            throw new EntityNotFoundException("This book has no cover image");
+        }
+        try {
+            return Files.readAllBytes(Path.of(book.getBookCover()));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read book cover file" + e);
+        }
     }
 }
