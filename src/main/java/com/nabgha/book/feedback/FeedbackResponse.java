@@ -8,6 +8,7 @@ public record FeedbackResponse(
         Integer id,
         Double note,
         String comment,
-        Integer bookId
+        Integer bookId,
+        boolean ownFeedback
 ) {
 }
