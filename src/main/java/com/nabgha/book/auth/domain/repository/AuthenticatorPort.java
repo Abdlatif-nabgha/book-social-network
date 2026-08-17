@@ -1,6 +1,6 @@
 package com.nabgha.book.auth.domain.repository;
 
-/**
- @auther abdlatif-nabgha
-**/public interface AuthenticatorPort {
+
+public interface AuthenticatorPort {
+    Integer authenticate(String email, String password);
 }

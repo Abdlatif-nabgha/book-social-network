@@ -1,6 +1,8 @@
 package com.nabgha.book.auth.domain.repository;
 
-/**
- @auther abdlatif-nabgha
-**/public interface TokenGeneratorPort {
+
+import java.util.List;
+
+public interface TokenGeneratorPort {
+    String generateToken(Integer userId, String email, String fullName, List<String> roles);
 }

@@ -1,6 +1,6 @@
 package com.nabgha.book.feedback.presentation.rest.dto;
 
-/**
- @auther abdlatif-nabgha
-**/public class FeedbackUpdateRequest {
-}
+public record FeedbackUpdateRequest(
+        Double note,
+        String comment
+) {}

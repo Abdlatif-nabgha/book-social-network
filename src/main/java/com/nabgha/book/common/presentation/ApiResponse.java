@@ -1,4 +1,4 @@
-package com.nabgha.book.common;
+package com.nabgha.book.common.presentation;
 
 import lombok.Builder;
 
@@ -8,6 +8,6 @@ public record ApiResponse <T> (
         T data
 ) {
     public static <T> ApiResponse <T> of(String message, T data) {
-        return new ApiResponse<T>(message, data);
+        return new ApiResponse<>(message, data);
     }
 }

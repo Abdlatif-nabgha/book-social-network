@@ -1,6 +1,6 @@
 package com.nabgha.book.auth.domain.repository;
 
-/**
- @auther abdlatif-nabgha
-**/public interface PasswordEncoderPort {
+
+public interface PasswordEncoderPort {
+    String encode(String rawPassword);
 }

@@ -1,7 +1,7 @@
 package com.nabgha.book;
 
-import com.nabgha.book.role.Role;
-import com.nabgha.book.role.RoleRepository;
+import com.nabgha.book.role.domain.model.Role;
+import com.nabgha.book.role.domain.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class BookNetworkApiApplication {
 
-	static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(BookNetworkApiApplication.class, args);
 	}
 
@@ -23,12 +23,12 @@ public class BookNetworkApiApplication {
 		return args -> {
 			if (roleRepository.findByName("USER").isEmpty()) {
 				roleRepository.save(
-						Role.builder().name("USER").build()
+						Role.create("USER")
 				);
 			}
 			if (roleRepository.findByName("ADMIN").isEmpty()) {
 				roleRepository.save(
-						Role.builder().name("ADMIN").build()
+						Role.create("ADMIN")
 				);
 			}
 		};

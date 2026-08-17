@@ -1,6 +1,5 @@
 package com.nabgha.book.history.domain.exception;
 
-/**
- @auther abdlatif-nabgha
-**/public class BookTransactionHistoryNotFoundException {
+public class BookTransactionHistoryNotFoundException extends RuntimeException {
+    public BookTransactionHistoryNotFoundException(String message) { super(message); }
 }

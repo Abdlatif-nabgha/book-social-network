@@ -1,6 +1,6 @@
 package com.nabgha.book.auth.domain.repository;
 
-/**
- @auther abdlatif-nabgha
-**/public interface ActivationCodeGeneratorPort {
+
+public interface ActivationCodeGeneratorPort {
+    String generate(int length);
 }

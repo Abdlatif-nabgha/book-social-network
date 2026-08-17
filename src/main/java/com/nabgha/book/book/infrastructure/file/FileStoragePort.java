@@ -1,4 +1,4 @@
-package com.nabgha.book.book.domain.repository;
+package com.nabgha.book.book.infrastructure.file;
 
 
 public interface FileStoragePort {

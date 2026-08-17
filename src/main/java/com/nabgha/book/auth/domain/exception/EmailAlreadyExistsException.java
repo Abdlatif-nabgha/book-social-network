@@ -1,4 +1,4 @@
-package com.nabgha.book.auth.domain;
+package com.nabgha.book.auth.domain.exception;
 
 
 public class EmailAlreadyExistsException extends RuntimeException {

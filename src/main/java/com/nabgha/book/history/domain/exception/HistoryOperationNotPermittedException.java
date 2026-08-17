@@ -1,6 +1,5 @@
 package com.nabgha.book.history.domain.exception;
 
-/**
- @auther abdlatif-nabgha
-**/public class HistoryOperationNotPermittedException {
+public class HistoryOperationNotPermittedException extends RuntimeException {
+    public HistoryOperationNotPermittedException(String message) { super(message); }
 }

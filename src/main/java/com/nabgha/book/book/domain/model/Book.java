@@ -1,10 +1,7 @@
 package com.nabgha.book.book.domain.model;
 
 
-import com.nabgha.book.feedback.Feedback;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Book {
 
@@ -19,7 +16,6 @@ public class Book {
     private final Integer ownerId;
     private final String ownerName;
     private final LocalDateTime createdAt;
-    private final List<Feedback> feedbacks;
 
     private Book(Builder builder) {
         this.id = builder.id;
@@ -33,7 +29,6 @@ public class Book {
         this.ownerId = builder.ownerId;
         this.ownerName = builder.ownerName;
         this.createdAt = builder.createdAt;
-        this.feedbacks = builder.feedbacks;
     }
 
     // ---- Factory methods: the only public entry points for construction ----
@@ -49,14 +44,13 @@ public class Book {
                 .ownerId(ownerId)
                 .ownerName(ownerName)
                 .createdAt(LocalDateTime.now())
-                .feedbacks(List.of())
                 .build();
     }
 
     public static Book reconstitute(Integer id, String title, String author, String isbn,
                                     String synopsis, String bookCover, boolean archived,
                                     boolean shareable, Integer ownerId, String ownerName,
-                                    LocalDateTime createdAt, List<Feedback> feedbacks) {
+                                    LocalDateTime createdAt) {
         return new Builder()
                 .id(id)
                 .title(title)
@@ -69,14 +63,13 @@ public class Book {
                 .ownerId(ownerId)
                 .ownerName(ownerName)
                 .createdAt(createdAt)
-                .feedbacks(feedbacks)
                 .build();
     }
 
         // --- domain behavior ---
 
     public boolean isAvailableForBorrowing() {
-        return !archived && shareable;
+        return archived || !shareable;
     }
 
     public boolean isOwnedBy(Integer userId) {
@@ -89,17 +82,6 @@ public class Book {
 
     public void updateCover(String coverPath) {
         this.bookCover = coverPath;
-    }
-
-    public double getRate() {
-        if (feedbacks.isEmpty()) {
-            return 0.0;
-        }
-        double average = feedbacks.stream()
-                .mapToDouble(Feedback::getNote)
-                .average()
-                .orElse(0.0);
-        return Math.round(average * 100.0) / 100.0;
     }
 
     // --- getters only, no setters for id/owner (immutable identity) ---
@@ -129,7 +111,6 @@ public class Book {
         private Integer ownerId;
         private String ownerName;
         private LocalDateTime createdAt;
-        private List<Feedback> feedbacks;
 
         Builder id(Integer id) { this.id = id; return this; }
         Builder title(String title) { this.title = title; return this; }
@@ -142,7 +123,6 @@ public class Book {
         Builder ownerId(Integer ownerId) { this.ownerId = ownerId; return this; }
         Builder ownerName(String ownerName) { this.ownerName = ownerName; return this; }
         Builder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
-        Builder feedbacks(List<Feedback> feedbacks) { this.feedbacks = feedbacks; return this; }
 
         Book build() {
             if (title == null || title.isBlank()) {

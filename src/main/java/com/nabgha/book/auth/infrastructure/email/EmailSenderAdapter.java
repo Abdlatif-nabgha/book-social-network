@@ -1,6 +1,22 @@
 package com.nabgha.book.auth.infrastructure.email;
 
-/**
- @auther abdlatif-nabgha
-**/public class EmailSenderAdapter {
+import com.nabgha.book.auth.domain.repository.EmailSenderPort;
+import com.nabgha.book.shared.email.EmailService;
+import com.nabgha.book.shared.email.EmailTemplateName;
+import jakarta.mail.MessagingException;
+import org.springframework.stereotype.Component;
+
+@Component
+public class EmailSenderAdapter implements EmailSenderPort {
+
+    private final EmailService emailService;
+
+    public EmailSenderAdapter(EmailService emailService) {
+        this.emailService = emailService;
+    }
+
+    @Override
+    public void sendActivationEmail(String toEmail, String fullName, String activationCode, String activationUrl) throws MessagingException {
+        emailService.sendEmail(toEmail, fullName, EmailTemplateName.ACTIVATE_ACCOUNT, activationUrl, activationCode, "Account activation" );
+    }
 }

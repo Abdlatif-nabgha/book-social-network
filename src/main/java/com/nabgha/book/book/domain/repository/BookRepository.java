@@ -20,4 +20,6 @@ public interface BookRepository {
     long countByOwner(Integer ownerId);
 
     boolean existsById(Integer id);
+
+    long countAll();
 }

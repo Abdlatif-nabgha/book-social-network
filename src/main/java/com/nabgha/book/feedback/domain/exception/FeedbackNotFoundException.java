@@ -1,6 +1,7 @@
 package com.nabgha.book.feedback.domain.exception;
 
-/**
- @auther abdlatif-nabgha
-**/public class FeedbackNotFoundException {
+public class FeedbackNotFoundException extends RuntimeException {
+    public FeedbackNotFoundException(Integer id) {
+        super("No feedback found with id: " + id);
+    }
 }

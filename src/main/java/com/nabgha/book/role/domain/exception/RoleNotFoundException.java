@@ -1,6 +1,8 @@
 package com.nabgha.book.role.domain.exception;
 
-/**
- @auther abdlatif-nabgha
-**/public class RoleNotFoundException {
+
+public class RoleNotFoundException extends RuntimeException {
+    public RoleNotFoundException(String message) {
+        super(message);
+    }
 }

@@ -1,6 +1,11 @@
 package com.nabgha.book.auth.presentation.rest.dto;
 
-/**
- @auther abdlatif-nabgha
-**/public class RegisterResponse {
-}
+import lombok.Builder;
+
+@Builder
+public record RegisterResponse(
+        Integer id,
+        String firstName,
+        String lastName,
+        String email
+) {}

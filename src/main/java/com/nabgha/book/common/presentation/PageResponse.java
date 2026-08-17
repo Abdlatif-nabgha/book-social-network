@@ -1,4 +1,4 @@
-package com.nabgha.book.common;
+package com.nabgha.book.common.presentation;
 
 import lombok.*;
 
