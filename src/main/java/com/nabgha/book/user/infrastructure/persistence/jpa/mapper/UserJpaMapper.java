@@ -31,16 +31,16 @@ public class UserJpaMapper {
     }
 
     public UserEntity toEntity(User user, List<RoleEntity> roles) {
-        return UserEntity.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .birthDate(user.getBirthDate())
-                .email(user.getEmail().getValue())
-                .password(user.getPassword())
-                .enabled(user.isEnabled())
-                .accountLocked(user.isAccountLocked())
-                .roles(roles)
-                .build();
+        UserEntity entity = new UserEntity();
+        entity.setId(user.getId());
+        entity.setFirstName(user.getFirstName());
+        entity.setLastName(user.getLastName());
+        entity.setBirthDate(user.getBirthDate());
+        entity.setEmail(user.getEmail().getValue());
+        entity.setPassword(user.getPassword());
+        entity.setEnabled(user.isEnabled());
+        entity.setAccountLocked(user.isAccountLocked());
+        entity.setRoles(roles);
+        return entity;
     }
 }

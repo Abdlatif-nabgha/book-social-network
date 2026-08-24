@@ -32,7 +32,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
             @Valid @RequestBody RegisterRequest request
-    ){
+    ) throws jakarta.mail.MessagingException {
         User user = registerUserUseCase.execute(
                 request.firstName(), request.lastName(), request.email(), request.password()
         );

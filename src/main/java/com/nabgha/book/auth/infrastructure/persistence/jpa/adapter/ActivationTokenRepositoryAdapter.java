@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Component
-@Transactional(readOnly = true)
+@Transactional
 public class ActivationTokenRepositoryAdapter implements ActivationTokenRepository {
 
     private final ActivationTokenJpaRepository tokenJpaRepository;

@@ -7,6 +7,7 @@ import com.nabgha.book.user.domain.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +22,15 @@ public class AdminController {
     private final BookRepository bookRepository;
 
     @GetMapping("/stats")
-    public ResponseEntity<ApiResponse<AdminStatsResponse>> getStats() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<AdminStatsResponse> getStats() {
         long totalUsers = userRepository.countAll();
         long totalBooks = bookRepository.countAll();
+
+        AdminStatsResponse stats = AdminStatsResponse.builder()
+                .totalUsers(totalUsers)
+                .totalBooks(totalBooks)
+                .build();
+        return ApiResponse.of("Stats retrieved successfully", stats);
     }
 }

@@ -34,7 +34,7 @@ public class RegisterUserUseCase {
         this.activationUrl = activationUrl;
     }
 
-    public User execute(String firstName, String lastName, String rawEmail, String rawPassword) {
+    public User execute(String firstName, String lastName, String rawEmail, String rawPassword) throws jakarta.mail.MessagingException {
         Email email = new Email(rawEmail);
 
         if (userRepository.existsByEmail(email)) {

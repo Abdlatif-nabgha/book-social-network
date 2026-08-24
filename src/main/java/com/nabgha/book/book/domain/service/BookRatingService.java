@@ -19,7 +19,10 @@ public class BookRatingService {
         if (feedbacks.isEmpty()) {
             return 0.0;
         }
-        double avg = feedbacks.stream().mapToDouble(Feedback::getNote).average().orElse(0.0);
+        double avg = feedbacks.stream()
+                .mapToDouble(Feedback::getNote)
+                .average()
+                .orElse(0.0);
 
         return Math.round(avg * 10.0) / 10.0;
     }

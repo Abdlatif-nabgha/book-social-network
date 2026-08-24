@@ -25,7 +25,7 @@ public class ApproveReturnBookUseCase {
         if (!book.isOwnedBy(userId)) {
             throw new BookOperationNotPermittedException("You cannot approve the return of a book you don't own");
         }
-        BookTransactionHistory history = historyRepository.findReturnedNotApprovedByBookAndUser(bookId, userId)
+        BookTransactionHistory history = historyRepository.findReturnedNotApprovedByBookAndOwner(bookId, userId)
                 .orElseThrow(() -> new BookTransactionHistoryNotFoundException(
                         "The book is not returned yet, you cannot approve its return"
                 ));

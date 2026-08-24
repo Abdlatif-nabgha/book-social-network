@@ -1,0 +1,47 @@
+<div class="flex flex-col items-center justify-center text-center py-16 px-4 sm:px-6 lg:px-8">
+  <!-- Hero Section -->
+  <h1 class="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl mb-6">
+    Welcome to <span class="text-blue-600">BookSocial</span>
+  </h1>
+  <p class="mt-3 max-w-md mx-auto text-base text-slate-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl mb-10">
+    The ultimate social network for book lovers. Share your favorite books with others, borrow new adventures, and connect with a global community of readers.
+  </p>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-center space-x-4 mb-20">
+    <a routerLink="/register" class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl text-lg font-medium transition-colors shadow-lg hover:shadow-xl">
+      <span>Join the Community</span>
+      <ng-icon name="heroArrowRightSolid" class="text-xl"></ng-icon>
+    </a>
+    <a routerLink="/login" class="flex items-center space-x-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-3 rounded-xl text-lg font-medium transition-colors shadow-sm">
+      <span>Sign In</span>
+    </a>
+  </div>
+
+  <!-- Statistics Section -->
+  <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <!-- Stat 1 -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 flex items-center justify-center space-x-6 hover:shadow-md transition-shadow">
+      <div class="bg-blue-100 p-4 rounded-full">
+        <ng-icon name="heroUsersSolid" class="text-blue-600 text-3xl"></ng-icon>
+      </div>
+      <div class="text-left">
+        <h3 class="text-4xl font-bold text-slate-900">10k+</h3>
+        <p class="text-slate-500 font-medium">Active Readers</p>
+      </div>
+    </div>
+
+    <!-- Stat 2 -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 flex items-center justify-center space-x-6 hover:shadow-md transition-shadow">
+      <div class="bg-green-100 p-4 rounded-full">
+        <ng-icon name="heroBookOpenSolid" class="text-green-600 text-3xl"></ng-icon>
+      </div>
+      <div class="text-left">
+        <h3 class="text-4xl font-bold text-slate-900">100k+</h3>
+        <p class="text-slate-500 font-medium">Books Shared</p>
+      </div>
+    </div>
+
+  </div>
+</div>

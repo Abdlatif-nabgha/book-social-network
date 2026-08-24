@@ -2,6 +2,7 @@ package com.nabgha.book.user.infrastructure.persistence.jpa.entity;
 
 import com.nabgha.book.book.infrastructure.persistence.jpa.entity.BookEntity;
 import com.nabgha.book.common.infrastructure.persistence.BaseEntity;
+import com.nabgha.book.history.infrastructure.persistence.jpa.entity.BookTransactionHistoryEntity;
 import com.nabgha.book.role.infrastructure.persistence.jpa.entity.RoleEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-@Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "_users")
 public class UserEntity extends BaseEntity implements UserDetails, Principal {

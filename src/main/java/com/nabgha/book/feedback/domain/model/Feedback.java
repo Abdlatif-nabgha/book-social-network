@@ -23,7 +23,7 @@ public class Feedback {
     }
 
     public static Feedback create(Double note, String comment, Integer bookId, Integer createdBy) {
-        return new Feedback(id, note, comment, bookId, createdBy, createdAt);
+        return new Feedback(null, note, comment, bookId, createdBy, LocalDateTime.now());
     }
 
     public static Feedback reconstitute(Integer id, Double note, String comment,
