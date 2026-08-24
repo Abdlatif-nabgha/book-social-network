@@ -73,8 +73,8 @@ export class Register {
           // Auto-redirect after a short delay so the user sees the success message
           setTimeout(() => {
             this.showToast.set(false);
-            this.router.navigate(['login']).catch(() => {
-              console.error('Navigation to login failed');
+            this.router.navigate(['activate-account']).catch(() => {
+              console.error('Navigation to activate-account failed');
             });
           }, 3500);
         },

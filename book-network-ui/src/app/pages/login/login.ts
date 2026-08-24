@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {authenticate} from '../../services/fn/authentication/authenticate';
 import {HttpClient} from '@angular/common/http';
 import {ApiConfiguration} from '../../services/api-configuration';
+import { Token } from '../../services/token/token';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ export class Login {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    private tokenService: Token
   ) {}
 
   protected login() {
@@ -51,7 +53,7 @@ export class Login {
         next: (response) => {
           const authResponse = response.body;
           if (authResponse && authResponse.data?.token) {
-            localStorage.setItem('token', authResponse.data.token as string);
+            this.tokenService.token = authResponse.data.token as string;
           }
           this.router.navigate(['books']).catch(() => {
             console.error('Navigation to books failed');
