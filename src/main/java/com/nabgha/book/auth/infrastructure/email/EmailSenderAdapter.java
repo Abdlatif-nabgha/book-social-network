@@ -17,6 +17,7 @@ public class EmailSenderAdapter implements EmailSenderPort {
 
     @Override
     public void sendActivationEmail(String toEmail, String fullName, String activationCode, String activationUrl) throws MessagingException {
-        emailService.sendEmail(toEmail, fullName, EmailTemplateName.ACTIVATE_ACCOUNT, activationUrl, activationCode, "Account activation" );
+        String fullActivationUrl = activationUrl + "?token=" + activationCode;
+        emailService.sendEmail(toEmail, fullName, EmailTemplateName.ACTIVATE_ACCOUNT, fullActivationUrl, activationCode, "Account activation" );
     }
 }

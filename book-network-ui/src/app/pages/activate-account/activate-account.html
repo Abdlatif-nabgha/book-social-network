@@ -49,6 +49,7 @@
       <div class="flex flex-col items-center justify-center">
         <label for="activationCode" class="block text-sm font-medium text-slate-700 mb-4 text-center">Verification Code</label>
         <code-input 
+          [code]="tokenCode"
           [codeLength]="6" 
           (codeChanged)="onCodeChanged($event)" 
           (codeCompleted)="onCodeCompleted($event)">

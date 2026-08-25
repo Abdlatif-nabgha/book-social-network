@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, signal, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { confirm } from '../../services/fn/authentication/confirm';
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration } from '../../services/api-configuration';
@@ -15,7 +15,7 @@ import { CodeInputModule } from 'angular-code-input';
   templateUrl: './activate-account.html',
   styleUrl: './activate-account.scss',
 })
-export class ActivateAccount {
+export class ActivateAccount implements OnInit {
   tokenCode = '';
   errorMessage = signal<Array<string>>([]);
   successMessage = signal<string>('');
@@ -24,9 +24,22 @@ export class ActivateAccount {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private http: HttpClient,
     private apiConfig: ApiConfiguration
   ) {}
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const token = params['token'];
+      if (token) {
+        this.tokenCode = token;
+        if (this.tokenCode.length === 6) {
+          this.activateAccount();
+        }
+      }
+    });
+  }
 
   protected activateAccount() {
     this.errorMessage.set([]);
