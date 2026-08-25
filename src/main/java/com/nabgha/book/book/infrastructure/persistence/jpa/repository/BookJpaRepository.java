@@ -12,6 +12,7 @@ public interface BookJpaRepository extends JpaRepository<BookEntity, Integer>, J
     @Query("""
         SELECT book
         FROM BookEntity book
+        JOIN FETCH book.owner
         WHERE book.archived = false
         AND book.shareable = true
         AND book.owner.id != :userId

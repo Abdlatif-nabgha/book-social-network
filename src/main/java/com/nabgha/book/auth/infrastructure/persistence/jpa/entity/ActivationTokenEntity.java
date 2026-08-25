@@ -27,7 +27,7 @@ public class ActivationTokenEntity {
     private LocalDateTime expiredAt;
     private LocalDateTime validatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 }

@@ -14,7 +14,7 @@ public class FeedbackEntity extends BaseEntity {
     private Double note;
     private String comment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private BookEntity book;
 }
