@@ -1,35 +1,43 @@
 <div class="min-h-screen bg-slate-50 flex flex-col text-slate-800 selection:bg-blue-200">
-  <!-- Professional Navigation Bar -->
-  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        
-        <!-- Logo Section -->
-        <div class="flex items-center">
-          <a routerLink="/" class="flex-shrink-0 flex items-center space-x-2.5 cursor-pointer">
-            <div class="bg-blue-600 p-2 rounded-lg shadow-sm flex items-center justify-center">
-              <ng-icon name="heroBookOpenSolid" class="text-white text-xl"></ng-icon>
-            </div>
-            <span class="font-bold text-xl tracking-tight text-slate-900 hover:text-blue-600 transition-colors">BookNetwork</span>
-          </a>
-        </div>
+  <!-- Professional Landing Navigation Bar -->
+  @if (isLanding()) {
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          
+          <!-- Logo Section -->
+          <div class="flex items-center">
+            <a routerLink="/" class="flex-shrink-0 flex items-center space-x-2.5 cursor-pointer">
+              <div class="bg-blue-600 p-2 rounded-lg shadow-sm flex items-center justify-center">
+                <ng-icon name="heroBookOpenSolid" class="text-white text-xl"></ng-icon>
+              </div>
+              <span class="font-bold text-xl tracking-tight text-slate-900 hover:text-blue-600 transition-colors">BookSocial</span>
+            </a>
+          </div>
 
-        <!-- Right Side Nav Actions -->
-        <div class="flex items-center space-x-3">
-          <a routerLink="/login" class="text-slate-500 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer">
-            Login
-          </a>
-          <a routerLink="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
-            Sign Up
-          </a>
-        </div>
+          <!-- Right Side Nav Actions -->
+          <div class="flex items-center space-x-3">
+            <a routerLink="/login" class="text-slate-500 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer">
+              Login
+            </a>
+            <a routerLink="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+              Sign Up
+            </a>
+          </div>
 
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+  }
 
   <!-- Main Application Content Area -->
-  <main class="flex-1 w-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <router-outlet></router-outlet>
-  </main>
+  @if (isLanding()) {
+    <main class="flex-1 w-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <router-outlet></router-outlet>
+    </main>
+  } @else {
+    <main class="flex-1 w-full flex flex-col">
+      <router-outlet></router-outlet>
+    </main>
+  }
 </div>

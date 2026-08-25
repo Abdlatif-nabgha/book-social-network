@@ -1,0 +1,25 @@
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  height: 4rem; /* h-16 */
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #64748b; /* text-slate-500 */
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    color: #1e293b; /* text-slate-800 */
+    border-color: #cbd5e1; /* border-slate-300 */
+  }
+
+  &.active-link {
+    color: #2563eb !important; /* text-blue-600 */
+    border-color: #2563eb !important; /* border-blue-600 */
+    font-weight: 600 !important; /* font-semibold */
+  }
+}

@@ -21,7 +21,8 @@ public class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
     @Override
     public String generateToken(Integer userId, String email, String fullName, List<String> roles) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("fullName", roles);
+        claims.put("fullName", fullName);
+        claims.put("roles", roles);
         return jwtService.generateTokenForClaims(claims, email);
     }
 }

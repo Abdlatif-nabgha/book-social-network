@@ -1,0 +1,70 @@
+<nav class="bg-white border-b border-slate-200 sticky top-0 z-40 w-full shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      
+      <!-- Brand Logo / Name -->
+      <div class="flex items-center">
+            <a routerLink="/books" class="flex-shrink-0 flex items-center space-x-2.5 cursor-pointer">
+              <div class="bg-blue-600 p-2 rounded-lg shadow-sm flex items-center justify-center">
+                <ng-icon name="heroBookOpenSolid" class="text-white text-xl"></ng-icon>
+              </div>
+              <span class="font-bold text-xl tracking-tight text-slate-900 hover:text-blue-600 transition-colors">BookSocial</span>
+            </a>
+
+        <!-- Desktop Navigation Menu -->
+        <div class="hidden md:ml-10 md:flex md:space-x-6">
+          <a 
+            routerLink="/books" 
+            [routerLinkActiveOptions]="{ exact: true }"
+            routerLinkActive="active-link"
+            class="nav-link"
+          >
+            All Books
+          </a>
+          <a 
+            routerLink="/books/my-books" 
+            routerLinkActive="active-link"
+            class="nav-link"
+          >
+            My Books
+          </a>
+          <a 
+            routerLink="/books/borrowed" 
+            routerLinkActive="active-link"
+            class="nav-link"
+          >
+            Borrowed
+          </a>
+          <a 
+            routerLink="/books/returned" 
+            routerLinkActive="active-link"
+            class="nav-link"
+          >
+            Returned
+          </a>
+        </div>
+      </div>
+
+      <!-- Right User Controls -->
+      <div class="flex items-center gap-4">
+        <!-- User Initials Avatar -->
+        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold border border-slate-200">
+          {{ userInitial }}
+        </div>
+        
+        <!-- Log Out Button -->
+        <button 
+          (click)="logout()" 
+          type="button"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50/50 transition-all cursor-pointer focus:outline-none"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+          Logout
+        </button>
+      </div>
+
+    </div>
+  </div>
+</nav>

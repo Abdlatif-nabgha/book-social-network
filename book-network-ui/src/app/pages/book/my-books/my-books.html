@@ -1,0 +1,129 @@
+<app-menu></app-menu>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header Section -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">My Books</h1>
+      <p class="text-slate-500 text-sm mt-1">Manage, edit, and check the shareable status of your books.</p>
+    </div>
+    <button 
+      (click)="shareBook()" 
+      type="button" 
+      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-xl shadow-md shadow-blue-500/10 active:scale-[0.98] transition-all cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Share a book
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl text-sm text-red-700 font-medium">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (bookResponse.content?.length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 text-center bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
+      <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-semibold text-slate-800">No books found</h3>
+      <p class="text-xs text-slate-500 mt-1 max-w-[280px]">You haven't shared any books yet. Click "Share a book" above to get started!</p>
+    </div>
+  } @else {
+    <!-- Books Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (book of bookResponse.content; track book.id) {
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+          
+          <!-- Book Cover Preview -->
+          <div class="aspect-[16/9] w-full bg-slate-50 relative flex items-center justify-center border-b border-slate-100 shrink-0">
+            @if (book.bookCover) {
+              <img [src]="'data:image/jpeg;base64,' + book.bookCover" class="w-full h-full object-cover" alt="Book Cover">
+            } @else {
+              <!-- Fallback Cover Representation -->
+              <div class="flex flex-col items-center gap-1.5 text-slate-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+                <span class="text-[10px] font-semibold tracking-wider uppercase">No Cover</span>
+              </div>
+            }
+          </div>
+
+          <!-- Card Details -->
+          <div class="p-5 flex-1 flex flex-col">
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-800 line-clamp-1 leading-snug">{{ book.title }}</h3>
+              <p class="text-xs text-slate-500 mt-1">by <span class="font-medium text-slate-700">{{ book.author }}</span></p>
+              <p class="text-[11px] text-slate-400 mt-0.5">ISBN: {{ book.isbn }}</p>
+              <p class="text-xs text-slate-600 mt-3 line-clamp-3 leading-relaxed">{{ book.synopsis }}</p>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="border-t border-slate-50 mt-5 pt-4 flex items-center justify-between">
+              
+              <!-- Shareable Toggle Status -->
+              <button 
+                (click)="toggleShareable(book)" 
+                type="button" 
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold select-none cursor-pointer transition-colors"
+                [ngClass]="book.shareable ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-slate-50 text-slate-500 border border-slate-200'"
+              >
+                <span class="w-1.5 h-1.5 rounded-full" [ngClass]="book.shareable ? 'bg-green-500 animate-pulse' : 'bg-slate-400'"></span>
+                {{ book.shareable ? 'Shareable' : 'Private' }}
+              </button>
+
+              <!-- Edit Action -->
+              <button 
+                (click)="editBook(book)" 
+                type="button" 
+                class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                </svg>
+                Edit
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination Section -->
+    @if (bookResponse.totalPages && bookResponse.totalPages > 1) {
+      <div class="flex items-center justify-between border-t border-slate-100 mt-10 pt-6">
+        <p class="text-xs text-slate-500">
+          Showing page <span class="font-semibold text-slate-800">{{ page + 1 }}</span> of <span class="font-semibold text-slate-800">{{ bookResponse.totalPages }}</span>
+        </p>
+        <div class="flex items-center gap-2">
+          <button 
+            (click)="goToPage(page - 1)" 
+            [disabled]="bookResponse.first"
+            type="button" 
+            class="px-3.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            Previous
+          </button>
+          <button 
+            (click)="goToPage(page + 1)" 
+            [disabled]="bookResponse.last"
+            type="button" 
+            class="px-3.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
