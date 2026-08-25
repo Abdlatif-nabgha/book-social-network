@@ -8,13 +8,13 @@
     </div>
 
     <!-- Error Alert -->
-    @if (errorMessage.length) {
+    @if (errorMessage().length) {
       <div class="mx-8 mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
         <div class="flex">
           <div class="ml-3">
             <div class="text-sm text-red-700">
               <ul class="list-disc pl-5 space-y-1 font-medium">
-                @for (message of errorMessage; track message) {
+                @for (message of errorMessage(); track message) {
                   <li>{{ message }}</li>
                 }
               </ul>
@@ -23,6 +23,7 @@
         </div>
       </div>
     }
+
 
     <!-- Login Form -->
     <div (keydown.enter)="login()" class="px-8 pb-8 space-y-5">
@@ -79,16 +80,28 @@
         </div>
       </div>
 
-      <!-- Submit Button -->
+            <!-- Submit Button -->
       <div class="pt-2">
         <button 
           (click)="login()" 
           type="button"
-          class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all active:scale-[0.98]"
+          [disabled]="loading()"
+          aria-busy="{{loading()}}"
+          class="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all active:scale-[0.98] disabled:opacity-60 cursor-pointer"
         >
-          Sign in
+          @if (loading()) {
+            <!-- Simple spinner -->
+            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            Signing in...
+          } @else {
+            Sign in
+          }
         </button>
       </div>
+
 
       <!-- Register Link -->
       <div class="mt-6 text-center">

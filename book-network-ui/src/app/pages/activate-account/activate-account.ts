@@ -4,11 +4,13 @@ import { confirm } from '../../services/fn/authentication/confirm';
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration } from '../../services/api-configuration';
 import { FormsModule } from '@angular/forms';
+import { CodeInputModule } from 'angular-code-input';
 
 @Component({
   selector: 'app-activate-account',
   imports: [
-    FormsModule
+    FormsModule,
+    CodeInputModule
   ],
   templateUrl: './activate-account.html',
   styleUrl: './activate-account.scss',
@@ -80,5 +82,14 @@ export class ActivateAccount {
     this.router.navigate(['login']).catch((err) => {
       console.error('Navigation to login failed', err);
     });
+  }
+
+  onCodeChanged(code: string) {
+    this.tokenCode = code;
+  }
+
+  onCodeCompleted(code: string) {
+    this.tokenCode = code;
+    this.activateAccount();
   }
 }

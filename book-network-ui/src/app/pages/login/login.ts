@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, Signal } from '@angular/core';
 import {AuthenticationRequest} from '../../services/models/authentication-request';
 import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -6,6 +6,8 @@ import {authenticate} from '../../services/fn/authentication/authenticate';
 import {HttpClient} from '@angular/common/http';
 import {ApiConfiguration} from '../../services/api-configuration';
 import { Token } from '../../services/token/token';
+import { timeout } from 'rxjs';
+import { ValidationUtils } from '../../services/utils/validation-utils';
 
 @Component({
   selector: 'app-login',
@@ -18,8 +20,9 @@ import { Token } from '../../services/token/token';
 export class Login {
 
   authRequest: AuthenticationRequest = {email: '', password: ''};
-  errorMessage: Array<string> = [];
+  errorMessage = signal<Array<string>>([]);
   showPassword = false;
+  loading = signal<boolean>(false);
 
   constructor(
     private router: Router,
@@ -29,28 +32,34 @@ export class Login {
   ) {}
 
   protected login() {
-    this.errorMessage = [];
+    this.errorMessage.set([]);
+
+    const errors: Array<string> = [];
     
     if (!this.authRequest.email) {
-      this.errorMessage.push('Email is mandatory');
-    } else {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(this.authRequest.email)) {
-        this.errorMessage.push('Please enter a valid email format');
-      }
+      errors.push('Email is mandatory');
+    } else if (!ValidationUtils.isValidEmail(this.authRequest.email)) {
+      errors.push('Please enter a valid email format');
     }
     
     if (!this.authRequest.password) {
-      this.errorMessage.push('Password is mandatory');
+      errors.push('Password is mandatory');
+    } else if (this.authRequest.password.length < 6) {
+      errors.push('Password must be at least 6 characters long');
     }
     
-    if (this.errorMessage.length > 0) {
+    if (errors.length > 0) {
+      this.errorMessage.set(errors);
       return;
     }
     
+    this.loading.set(true); // start loading here
+
     authenticate(this.http, this.apiConfig.rootUrl, { body: this.authRequest })
+      .pipe(timeout(5000))
       .subscribe({
         next: (response) => {
+          this.loading.set(false);
           const authResponse = response.body;
           if (authResponse && authResponse.data?.token) {
             this.tokenService.token = authResponse.data.token as string;
@@ -60,24 +69,31 @@ export class Login {
           });
         },
         error: (err) => {
+          this.loading.set(false);
+
+          if (err && err.name === 'TimeoutError') {
+            this.errorMessage.set(['The server is taking too long to respond. Please try your backend connection.']);
+            return;
+          }
+
           if (err.error?.validationErrors) {
-            this.errorMessage = err.error.validationErrors;
+            this.errorMessage.set(err.error.validationErrors);
           } else if (err.error?.errorMsg) {
-            this.errorMessage = [err.error.errorMsg];
+            this.errorMessage.set([err.error.errorMsg]);
           } else if (err.error?.error) {
             if (err.error.error.includes('User is disabled') || err.error.error.includes('DisabledException')) {
-              this.errorMessage = ['Your account is not activated yet. Please check your email for the activation code.'];
+              this.errorMessage.set(['Your account is not activated yet. Please check your email for the activation code.']);
             } else {
-              this.errorMessage = [err.error.error];
+              this.errorMessage.set([err.error.error]);
             }
           } else if (err.error?.message) {
             if (err.error.message.includes('User is disabled') || err.error.message.includes('DisabledException')) {
-              this.errorMessage = ['Your account is not activated yet. Please check your email for the activation code.'];
+              this.errorMessage.set(['Your account is not activated yet. Please check your email for the activation code.']);
             } else {
-              this.errorMessage = [err.error.message];
+              this.errorMessage.set([err.error.message]);
             }
           } else {
-            this.errorMessage = ['An error occurred'];
+            this.errorMessage.set(['An error occurred']);
           }
         }
       });

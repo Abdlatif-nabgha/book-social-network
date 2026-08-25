@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { RegisterRequest } from '../../services/models/register-request';
-import {FormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
-import {register} from '../../services/fn/authentication/register';
-import {HttpClient} from '@angular/common/http';
-import {ApiConfiguration} from '../../services/api-configuration';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { register } from '../../services/fn/authentication/register';
+import { HttpClient } from '@angular/common/http';
+import { ApiConfiguration } from '../../services/api-configuration';
 import { timeout } from 'rxjs/operators';
+import { ValidationUtils } from '../../services/utils/validation-utils';
 
 @Component({
   selector: 'app-register',
@@ -43,11 +44,8 @@ export class Register {
     }
     if (!this.registerRequest.email) {
       errors.push('Email is mandatory');
-    } else {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(this.registerRequest.email)) {
-        errors.push('Please enter a valid email format');
-      }
+    } else if (!ValidationUtils.isValidEmail(this.registerRequest.email)) {
+      errors.push('Please enter a valid email format');
     }
     if (!this.registerRequest.password) {
       errors.push('Password is mandatory');
