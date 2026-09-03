@@ -29,7 +29,28 @@ export class Token {
     return this.decodedToken?.userId || null;
   }
 
+  get userEmail(): string {
+    return this.decodedToken?.sub || '';
+  }
+
   get userFullName(): string {
     return this.decodedToken?.fullName || '';
+  }
+
+  get userInitials(): string {
+    const fullName = this.userFullName;
+    if (fullName) {
+      const parts = fullName.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+      } else if (parts.length === 1 && parts[0]) {
+        return parts[0].substring(0, 2).toUpperCase();
+      }
+    }
+    return 'U';
+  }
+
+  clear() {
+    localStorage.removeItem('token');
   }
 }
