@@ -25,6 +25,10 @@ export class Token {
     }
   }
 
+  get userId(): number | null {
+    return this.decodedToken?.userId || null;
+  }
+
   get userFullName(): string {
     return this.decodedToken?.fullName || '';
   }

@@ -42,14 +42,16 @@ public class BookRepositoryAdapter implements BookRepository {
         return bookJpaRepository.findById(id).map(bookJpaMapper::toDomain);
     }
 
-    public List<Book> findAllDisplayableBooks(int page, int size, Integer excludedOwnerId) {
+    @Override
+    public List<Book> findAllDisplayableBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
-        return bookJpaRepository.findAllDisplayableBooks(pageable, excludedOwnerId)
+        return bookJpaRepository.findAllDisplayableBooks(pageable)
                 .stream().map(bookJpaMapper::toDomain).toList();
     }
 
-    public long countDisplayableBooks(Integer excludedOwnerId) {
-        return bookJpaRepository.countDisplayableBooks(excludedOwnerId);
+    @Override
+    public long countDisplayableBooks() {
+        return bookJpaRepository.countDisplayableBooks();
     }
 
     @Override

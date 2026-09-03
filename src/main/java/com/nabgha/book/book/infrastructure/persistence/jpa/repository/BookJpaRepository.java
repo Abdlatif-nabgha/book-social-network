@@ -15,17 +15,15 @@ public interface BookJpaRepository extends JpaRepository<BookEntity, Integer>, J
         JOIN FETCH book.owner
         WHERE book.archived = false
         AND book.shareable = true
-        AND book.owner.id != :userId
         """)
-    Page<BookEntity> findAllDisplayableBooks(Pageable pageable, Integer userId);
+    Page<BookEntity> findAllDisplayableBooks(Pageable pageable);
 
     @Query("""
         SELECT COUNT(book)
         FROM BookEntity book
         WHERE book.archived = false
         AND book.shareable = true
-        AND book.owner.id != :userId
         """)
-    long countDisplayableBooks(Integer userId);
+    long countDisplayableBooks();
 
 }

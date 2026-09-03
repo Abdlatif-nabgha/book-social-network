@@ -9,6 +9,8 @@ import { PageResponseBookResponse } from '../../../services/models/page-response
 import { Menu } from '../../../components/menu/menu';
 import { CommonModule } from '@angular/common';
 
+import { Token } from '../../../services/token/token';
+
 @Component({
   selector: 'app-book-list',
   standalone: true,
@@ -26,26 +28,43 @@ export class BookList implements OnInit {
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
   showToast = signal<boolean>(false);
+  loading = signal<boolean>(true);
 
   constructor(
     private router: Router,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    public tokenService: Token
   ) {}
+
+  isOwner(book: BookResponse): boolean {
+    if (this.tokenService.userId && book.ownerId) {
+      return this.tokenService.userId === book.ownerId;
+    }
+    return !!(this.tokenService.userFullName && book.ownerName === this.tokenService.userFullName);
+  }
+
+  manageBook(book: BookResponse) {
+    this.router.navigate(['books/manage', book.id]).catch(err => console.error(err));
+  }
 
   ngOnInit() {
     this.fetchDisplayableBooks();
   }
 
   fetchDisplayableBooks() {
+    this.loading.set(true);
+    this.errorMessage.set('');
     findAllDisplayable(this.http, this.apiConfig.rootUrl, { page: this.page, size: this.size })
       .subscribe({
         next: (res) => {
-          this.bookResponse = res.body;
+          this.loading.set(false);
+          this.bookResponse = res.body || {};
         },
         error: (err) => {
+          this.loading.set(false);
           console.error(err);
-          this.errorMessage.set('Failed to load books. Please check your connection.');
+          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to load books. Please check your connection.');
         }
       });
   }

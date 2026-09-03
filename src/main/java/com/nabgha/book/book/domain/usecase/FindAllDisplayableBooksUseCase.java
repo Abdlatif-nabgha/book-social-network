@@ -14,9 +14,9 @@ public class FindAllDisplayableBooksUseCase {
         this.bookRepository = bookRepository;
     }
 
-    public PageResult<Book> execute(int page, int size, Integer connectedUserId) {
-        List<Book> books = bookRepository.findAllDisplayableBooks(page, size, connectedUserId);
-        long total = bookRepository.countDisplayableBooks(connectedUserId);
+    public PageResult<Book> execute(int page, int size) {
+        List<Book> books = bookRepository.findAllDisplayableBooks(page, size);
+        long total = bookRepository.countDisplayableBooks();
         return new PageResult<>(books, page, size, total);
     }
 }

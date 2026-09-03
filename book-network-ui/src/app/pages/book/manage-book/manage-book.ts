@@ -143,7 +143,7 @@ export class ManageBook implements OnInit {
             this.uploadCoverPicture(bookIdToUse);
           } else {
             this.loading.set(false);
-            this.router.navigate(['books/my-books']).catch(err => console.error(err));
+            this.router.navigate(['books/my-books'], { queryParams: { saved: 'true' } }).catch(err => console.error(err));
           }
         },
         error: (err) => {
@@ -189,7 +189,7 @@ export class ManageBook implements OnInit {
     }).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigate(['books/my-books']).catch(err => console.error(err));
+        this.router.navigate(['books/my-books'], { queryParams: { saved: 'true' } }).catch(err => console.error(err));
       },
       error: (err) => {
         this.loading.set(false);

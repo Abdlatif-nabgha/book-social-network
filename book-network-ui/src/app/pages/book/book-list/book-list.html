@@ -34,8 +34,17 @@
     </div>
   }
 
-  <!-- Empty State -->
-  @if (bookResponse.content?.length === 0) {
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <svg class="animate-spin h-8 w-8 text-blue-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <p class="text-sm text-slate-500 font-medium">Loading books...</p>
+    </div>
+  } @else if (!bookResponse.content || bookResponse.content.length === 0) {
+    <!-- Empty State -->
     <div class="flex flex-col items-center justify-center py-16 text-center bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
       <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -86,14 +95,32 @@
             </div>
 
             <!-- Card Actions -->
-            <div class="border-t border-slate-50 mt-5 pt-4 flex items-center justify-end">
-              <button 
-                (click)="borrow(book)" 
-                type="button" 
-                class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all cursor-pointer active:scale-[0.97]"
-              >
-                Borrow Book
-              </button>
+            <div class="border-t border-slate-50 mt-5 pt-4 flex items-center justify-between">
+              @if (isOwner(book)) {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  Your Book
+                </span>
+                <button 
+                  (click)="manageBook(book)" 
+                  type="button" 
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                  </svg>
+                  Edit
+                </button>
+              } @else {
+                <span class="text-xs text-slate-400">Available</span>
+                <button 
+                  (click)="borrow(book)" 
+                  type="button" 
+                  class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all cursor-pointer active:scale-[0.97]"
+                >
+                  Borrow Book
+                </button>
+              }
             </div>
 
           </div>

@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -58,10 +57,9 @@ public class BookController {
     @GetMapping
     public ResponseEntity<PageResponse<BookResponse>> findAllDisplayable(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal UserEntity connectedUser
+            @RequestParam(defaultValue = "10") int size
     ) {
-        PageResult<Book> result = findAllDisplayableBooksUseCase.execute(page, size, connectedUser.getId());
+        PageResult<Book> result = findAllDisplayableBooksUseCase.execute(page, size);
         return ResponseEntity.ok(bookDtoMapper.toPageResponse(result));
     }
 

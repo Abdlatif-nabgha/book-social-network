@@ -11,9 +11,9 @@ public interface BookRepository {
 
     Optional<Book> findById(Integer id);
 
-    List<Book> findAllDisplayableBooks(int page, int size, Integer excludedOwnerId);
+    List<Book> findAllDisplayableBooks(int page, int size);
 
-    long countDisplayableBooks(Integer excludedOwnerId);
+    long countDisplayableBooks();
 
     List<Book> findAllByOwner(int page, int size, Integer ownerId);
 
