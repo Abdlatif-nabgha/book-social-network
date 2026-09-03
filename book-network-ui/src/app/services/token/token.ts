@@ -55,10 +55,18 @@ export class Token {
     if (Array.isArray(auth)) {
       return auth;
     }
+    const roles = this.decodedToken?.roles;
+    if (Array.isArray(roles)) {
+      return roles.map(r => r.startsWith('ROLE_') ? r : `ROLE_${r}`);
+    }
     return [];
   }
 
   get roles(): Array<string> {
+    const roles = this.decodedToken?.roles;
+    if (Array.isArray(roles)) {
+      return roles.map(r => r.replace(/^ROLE_/, ''));
+    }
     return this.authorities.map(a => a.replace(/^ROLE_/, ''));
   }
 

@@ -24,6 +24,7 @@ public class JwtTokenGeneratorAdapter implements TokenGeneratorPort {
         claims.put("userId", userId);
         claims.put("fullName", fullName);
         claims.put("roles", roles);
+        claims.put("authorities", roles.stream().map(r -> "ROLE_" + r).toList());
         return jwtService.generateTokenForClaims(claims, email);
     }
 }
