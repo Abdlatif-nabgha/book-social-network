@@ -10,5 +10,6 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'activate-account', component: ActivateAccount },
   { path: 'token', redirectTo: 'activate-account', pathMatch: 'full' },
+  { path: 'admin', loadComponent: () => import('./pages/admin/admin-dashboard').then(m => m.AdminDashboard) },
   { path: 'books', loadChildren: () => import('./pages/book/book.routes').then(m => m.BOOK_ROUTES) }
 ];

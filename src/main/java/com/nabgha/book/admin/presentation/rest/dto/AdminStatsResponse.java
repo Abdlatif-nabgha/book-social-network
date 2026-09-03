@@ -5,5 +5,7 @@ import lombok.Builder;
 @Builder
 public record AdminStatsResponse(
         long totalUsers,
-        long totalBooks
+        long totalBooks,
+        long totalTransactions,
+        long activeBorrowings
 ) {}

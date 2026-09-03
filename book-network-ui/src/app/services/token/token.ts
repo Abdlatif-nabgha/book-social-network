@@ -50,6 +50,22 @@ export class Token {
     return 'U';
   }
 
+  get authorities(): Array<string> {
+    const auth = this.decodedToken?.authorities;
+    if (Array.isArray(auth)) {
+      return auth;
+    }
+    return [];
+  }
+
+  get roles(): Array<string> {
+    return this.authorities.map(a => a.replace(/^ROLE_/, ''));
+  }
+
+  get isAdmin(): boolean {
+    return this.roles.includes('ADMIN') || this.authorities.includes('ROLE_ADMIN');
+  }
+
   clear() {
     localStorage.removeItem('token');
   }
