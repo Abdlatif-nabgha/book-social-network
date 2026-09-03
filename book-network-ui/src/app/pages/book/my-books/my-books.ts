@@ -25,7 +25,7 @@ import { deleteBook } from '../../../services/fn/book/delete-book';
 export class MyBooks implements OnInit {
   bookResponse: PageResponseBookResponse = {};
   page = 0;
-  size = 6;
+  size = 8;
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
   showToast = signal<boolean>(false);
@@ -80,11 +80,19 @@ export class MyBooks implements OnInit {
     this.router.navigate(['books/manage']).catch(err => console.error(err));
   }
 
-  editBook(book: BookResponse) {
+  viewDetails(book: BookResponse) {
+    if (book.id) {
+      this.router.navigate(['books', book.id]).catch(err => console.error(err));
+    }
+  }
+
+  editBook(book: BookResponse, event?: Event) {
+    if (event) event.stopPropagation();
     this.router.navigate(['books/manage', book.id]).catch(err => console.error(err));
   }
 
-  toggleShareable(book: BookResponse) {
+  toggleShareable(book: BookResponse, event?: Event) {
+    if (event) event.stopPropagation();
     if (!book.id) return;
     this.errorMessage.set('');
     updateShareableStatus(this.http, this.apiConfig.rootUrl, { bookId: book.id })
@@ -107,7 +115,8 @@ export class MyBooks implements OnInit {
       });
   }
 
-  toggleArchived(book: BookResponse) {
+  toggleArchived(book: BookResponse, event?: Event) {
+    if (event) event.stopPropagation();
     if (!book.id) return;
     this.errorMessage.set('');
     updateArchivedStatus(this.http, this.apiConfig.rootUrl, { bookId: book.id })
@@ -130,7 +139,8 @@ export class MyBooks implements OnInit {
       });
   }
 
-  openDeleteModal(book: BookResponse) {
+  openDeleteModal(book: BookResponse, event?: Event) {
+    if (event) event.stopPropagation();
     this.bookToDelete.set(book);
     this.showDeleteModal.set(true);
   }

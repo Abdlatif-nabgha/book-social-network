@@ -24,7 +24,7 @@ import { Token } from '../../../services/token/token';
 export class BookList implements OnInit {
   bookResponse: PageResponseBookResponse = {};
   page = 0;
-  size = 6;
+  size = 8;
   errorMessage = signal<string>('');
   successMessage = signal<string>('');
   showToast = signal<boolean>(false);
@@ -44,8 +44,15 @@ export class BookList implements OnInit {
     return !!(this.tokenService.userFullName && book.ownerName === this.tokenService.userFullName);
   }
 
-  manageBook(book: BookResponse) {
+  manageBook(book: BookResponse, event?: Event) {
+    if (event) event.stopPropagation();
     this.router.navigate(['books/manage', book.id]).catch(err => console.error(err));
+  }
+
+  viewDetails(book: BookResponse) {
+    if (book.id) {
+      this.router.navigate(['books', book.id]).catch(err => console.error(err));
+    }
   }
 
   ngOnInit() {
@@ -74,7 +81,8 @@ export class BookList implements OnInit {
     this.fetchDisplayableBooks();
   }
 
-  borrow(book: BookResponse) {
+  borrow(book: BookResponse, event?: Event) {
+    if (event) event.stopPropagation();
     if (!book.id) return;
     this.errorMessage.set('');
     this.successMessage.set('');
