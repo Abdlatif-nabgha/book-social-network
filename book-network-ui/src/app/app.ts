@@ -19,8 +19,9 @@ export class App {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      // Check if current route is under '/books'
-      this.isLanding.set(!event.urlAfterRedirects.startsWith('/books'));
+      const url = event.urlAfterRedirects;
+      const isPublic = url === '/' || url === '' || url.startsWith('/login') || url.startsWith('/register') || url.startsWith('/activate-account') || url.startsWith('/token');
+      this.isLanding.set(isPublic);
     });
   }
 }
