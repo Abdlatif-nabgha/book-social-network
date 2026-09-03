@@ -78,10 +78,16 @@ public class Book {
 
     public void toggleShareable() {
         this.shareable = !this.shareable;
+        if (this.shareable && this.archived) {
+            this.archived = false;
+        }
     }
 
     public void toggleArchived() {
         this.archived = !this.archived;
+        if (this.archived) {
+            this.shareable = false;
+        }
     }
 
     public void updateCover(String coverPath) {

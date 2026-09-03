@@ -89,8 +89,13 @@ export class MyBooks implements OnInit {
     this.errorMessage.set('');
     updateShareableStatus(this.http, this.apiConfig.rootUrl, { bookId: book.id })
       .subscribe({
-        next: () => {
-          book.shareable = !book.shareable;
+        next: (res) => {
+          if (res.body?.data) {
+            book.shareable = res.body.data.shareable;
+            book.archived = res.body.data.archived;
+          } else {
+            book.shareable = !book.shareable;
+          }
           this.successMessage.set(book.shareable ? `"${book.title}" is now shareable.` : `"${book.title}" is now private.`);
           this.showToast.set(true);
           setTimeout(() => this.showToast.set(false), 3000);
@@ -107,9 +112,14 @@ export class MyBooks implements OnInit {
     this.errorMessage.set('');
     updateArchivedStatus(this.http, this.apiConfig.rootUrl, { bookId: book.id })
       .subscribe({
-        next: () => {
-          book.archived = !book.archived;
-          this.successMessage.set(book.archived ? `"${book.title}" has been archived.` : `"${book.title}" restored from archive.`);
+        next: (res) => {
+          if (res.body?.data) {
+            book.archived = res.body.data.archived;
+            book.shareable = res.body.data.shareable;
+          } else {
+            book.archived = !book.archived;
+          }
+          this.successMessage.set(book.archived ? `"${book.title}" is now archived and private.` : `"${book.title}" restored from archive.`);
           this.showToast.set(true);
           setTimeout(() => this.showToast.set(false), 3000);
         },
