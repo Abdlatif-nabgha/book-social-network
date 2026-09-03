@@ -79,4 +79,9 @@ public class BookRepositoryAdapter implements BookRepository {
     private org.springframework.data.jpa.domain.Specification<BookEntity> withOwnerId(Integer ownerId) {
         return (root, query, cb) -> cb.equal(root.get("owner").get("id"), ownerId);
     }
+
+    @Override
+    public void deleteById(Integer id) {
+        bookJpaRepository.deleteById(id);
+    }
 }

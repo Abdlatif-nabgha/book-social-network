@@ -5,6 +5,8 @@ import com.nabgha.book.book.domain.service.BookRatingService;
 import com.nabgha.book.book.domain.usecase.*;
 import com.nabgha.book.book.infrastructure.file.FileStoragePort;
 import com.nabgha.book.feedback.domain.repository.FeedbackRepository;
+import com.nabgha.book.history.domain.repository.BookTransactionHistoryRepository;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,5 +46,15 @@ public class BookUseCaseConfig {
     @Bean
     public BookRatingService bookRatingService(FeedbackRepository feedbackRepository) {
         return new BookRatingService(feedbackRepository);
+    }
+
+    @Bean
+    public UpdateArchivedStatusUseCase updateArchivedStatusUseCase(BookRepository bookRepository) {
+        return new UpdateArchivedStatusUseCase(bookRepository);
+    }
+
+    @Bean
+    public DeleteBookUseCase deleteBookUseCase(BookRepository bookRepository, BookTransactionHistoryRepository history) {
+        return new DeleteBookUseCase(bookRepository, history);
     }
 }

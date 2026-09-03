@@ -33,6 +33,8 @@ public class BookController {
     private final UpdateShareableStatusUseCase updateShareableStatusUseCase;
     private final UploadBookCoverUseCase uploadBookCoverUseCase;
     private final BookDtoMapper bookDtoMapper;
+    private final UpdateArchivedStatusUseCase updateArchivedStatusUseCase;
+    private final DeleteBookUseCase deleteBookUseCase;
 
     @PostMapping
     public ResponseEntity<ApiResponse<BookResponse>> saveBook(
@@ -92,4 +94,21 @@ public class BookController {
         return ResponseEntity.ok(ApiResponse.of("Image uploaded successfully", bookDtoMapper.toResponse(book)));
     }
 
+    @PatchMapping("/archived/{bookId}")
+    public ResponseEntity<ApiResponse<BookResponse>> updateArchivedStatus(
+        @PathVariable Integer bookId,
+        @AuthenticationPrincipal UserEntity connectedUser
+    ) {
+        Book book = updateArchivedStatusUseCase.execute(bookId, connectedUser.getId());
+        return ResponseEntity.ok(ApiResponse.of("Book status updated successfully", bookDtoMapper.toResponse(book)));
+    }
+
+    @DeleteMapping("/{bookId}")
+    ResponseEntity<ApiResponse<Void>> deleteBook(
+        @PathVariable Integer bookId,
+        @AuthenticationPrincipal UserEntity connectedUser
+    ) {
+        deleteBookUseCase.execute(bookId, connectedUser.getId());
+        return ResponseEntity.ok(ApiResponse.of("Book deleted successfully", null));
+    }
 }

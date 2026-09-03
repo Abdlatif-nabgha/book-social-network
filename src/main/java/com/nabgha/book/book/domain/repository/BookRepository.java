@@ -21,5 +21,7 @@ public interface BookRepository {
 
     boolean existsById(Integer id);
 
+    void deleteById(Integer id);
+
     long countAll();
 }

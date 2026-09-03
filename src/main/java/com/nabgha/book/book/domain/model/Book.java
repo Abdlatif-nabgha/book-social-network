@@ -80,6 +80,10 @@ public class Book {
         this.shareable = !this.shareable;
     }
 
+    public void toggleArchived() {
+        this.archived = !this.archived;
+    }
+
     public void updateCover(String coverPath) {
         this.bookCover = coverPath;
     }
