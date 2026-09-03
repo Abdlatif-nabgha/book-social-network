@@ -9,6 +9,9 @@ import { PageResponseBookResponse } from '../../../services/models/page-response
 import { Menu } from '../../../components/menu/menu';
 import { CommonModule } from '@angular/common';
 
+import { updateArchivedStatus } from '../../../services/fn/book/update-archived-status';
+import { deleteBook } from '../../../services/fn/book/delete-book';
+
 @Component({
   selector: 'app-my-books',
   standalone: true,
@@ -27,6 +30,11 @@ export class MyBooks implements OnInit {
   successMessage = signal<string>('');
   showToast = signal<boolean>(false);
   loading = signal<boolean>(true);
+
+  // Delete modal state
+  showDeleteModal = signal<boolean>(false);
+  bookToDelete = signal<BookResponse | null>(null);
+  deleting = signal<boolean>(false);
 
   constructor(
     private router: Router,
@@ -78,13 +86,71 @@ export class MyBooks implements OnInit {
 
   toggleShareable(book: BookResponse) {
     if (!book.id) return;
+    this.errorMessage.set('');
     updateShareableStatus(this.http, this.apiConfig.rootUrl, { bookId: book.id })
       .subscribe({
         next: () => {
           book.shareable = !book.shareable;
+          this.successMessage.set(book.shareable ? `"${book.title}" is now shareable.` : `"${book.title}" is now private.`);
+          this.showToast.set(true);
+          setTimeout(() => this.showToast.set(false), 3000);
         },
         error: (err) => {
           console.error('Failed to update shareable status', err);
+          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to update shareable status.');
+        }
+      });
+  }
+
+  toggleArchived(book: BookResponse) {
+    if (!book.id) return;
+    this.errorMessage.set('');
+    updateArchivedStatus(this.http, this.apiConfig.rootUrl, { bookId: book.id })
+      .subscribe({
+        next: () => {
+          book.archived = !book.archived;
+          this.successMessage.set(book.archived ? `"${book.title}" has been archived.` : `"${book.title}" restored from archive.`);
+          this.showToast.set(true);
+          setTimeout(() => this.showToast.set(false), 3000);
+        },
+        error: (err) => {
+          console.error('Failed to update archive status', err);
+          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to update archive status.');
+        }
+      });
+  }
+
+  openDeleteModal(book: BookResponse) {
+    this.bookToDelete.set(book);
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal.set(false);
+    this.bookToDelete.set(null);
+  }
+
+  confirmDelete() {
+    const book = this.bookToDelete();
+    if (!book?.id) return;
+    this.deleting.set(true);
+    this.errorMessage.set('');
+
+    deleteBook(this.http, this.apiConfig.rootUrl, { bookId: book.id })
+      .subscribe({
+        next: () => {
+          this.deleting.set(false);
+          this.closeDeleteModal();
+          this.successMessage.set(`"${book.title}" was permanently deleted.`);
+          this.showToast.set(true);
+          this.fetchUserBooks();
+          setTimeout(() => this.showToast.set(false), 3500);
+        },
+        error: (err) => {
+          this.deleting.set(false);
+          this.closeDeleteModal();
+          console.error('Failed to delete book', err);
+          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to delete book. Please ensure it is not currently borrowed.');
         }
       });
   }

@@ -10,6 +10,8 @@ import { Menu } from '../../../components/menu/menu';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { deleteBook } from '../../../services/fn/book/delete-book';
+
 @Component({
   selector: 'app-manage-book',
   standalone: true,
@@ -34,6 +36,8 @@ export class ManageBook implements OnInit {
   selectedPicture: File | null = null;
   picturePreviewUrl = signal<string | null>(null);
   loading = signal<boolean>(false);
+  deleting = signal<boolean>(false);
+  showDeleteModal = signal<boolean>(false);
   errorMessage = signal<Array<string>>([]);
 
   constructor(
@@ -42,6 +46,35 @@ export class ManageBook implements OnInit {
     private http: HttpClient,
     private apiConfig: ApiConfiguration
   ) {}
+
+  openDeleteModal() {
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal.set(false);
+  }
+
+  confirmDelete() {
+    if (!this.bookId) return;
+    this.deleting.set(true);
+    this.errorMessage.set([]);
+
+    deleteBook(this.http, this.apiConfig.rootUrl, { bookId: this.bookId })
+      .subscribe({
+        next: () => {
+          this.deleting.set(false);
+          this.closeDeleteModal();
+          this.router.navigate(['books/my-books']).catch(err => console.error(err));
+        },
+        error: (err) => {
+          this.deleting.set(false);
+          this.closeDeleteModal();
+          console.error('Error deleting book:', err);
+          this.errorMessage.set([err.error?.error || err.error?.message || 'Failed to delete book. Ensure it is not currently borrowed.']);
+        }
+      });
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {

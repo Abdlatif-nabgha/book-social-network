@@ -17,6 +17,10 @@ export type { UploadBookCoverPicture$Params as UploadBookCoverPicture$Params } f
 export { uploadBookCoverPicture as uploadBookCoverPicture } from './fn/book/upload-book-cover-picture';
 export type { UpdateShareableStatus$Params as UpdateShareableStatus$Params } from './fn/book/update-shareable-status';
 export { updateShareableStatus as updateShareableStatus } from './fn/book/update-shareable-status';
+export type { UpdateArchivedStatus$Params as UpdateArchivedStatus$Params } from './fn/book/update-archived-status';
+export { updateArchivedStatus as updateArchivedStatus } from './fn/book/update-archived-status';
+export type { DeleteBook$Params as DeleteBook$Params } from './fn/book/delete-book';
+export { deleteBook as deleteBook } from './fn/book/delete-book';
 export type { FindById$Params as FindById$Params } from './fn/book/find-by-id';
 export { findById as findById } from './fn/book/find-by-id';
 export type { FindAllByOwner$Params as FindAllByOwner$Params } from './fn/book/find-all-by-owner';
