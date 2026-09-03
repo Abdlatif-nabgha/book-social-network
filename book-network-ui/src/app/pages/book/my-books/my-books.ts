@@ -36,6 +36,7 @@ export class MyBooks implements OnInit {
   }
 
   fetchUserBooks() {
+    this.errorMessage.set('');
     findAllByOwner(this.http, this.apiConfig.rootUrl, { page: this.page, size: this.size })
       .subscribe({
         next: (res) => {
@@ -43,7 +44,7 @@ export class MyBooks implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage.set('Could not load your books.');
+          this.errorMessage.set(err.error?.error || err.error?.message || 'Could not load your books.');
         }
       });
   }

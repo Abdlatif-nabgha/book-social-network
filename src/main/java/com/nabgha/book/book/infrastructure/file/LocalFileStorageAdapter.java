@@ -38,6 +38,7 @@ public class LocalFileStorageAdapter implements FileStoragePort {
         }
     }
 
+    @Override
     public byte[] read(String location) {
         if (location == null || location.isBlank()) {
             return null;

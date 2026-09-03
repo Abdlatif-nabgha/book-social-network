@@ -16,7 +16,7 @@ public class FindAllBooksByOwnerUseCase {
     }
 
     public PageResult<Book> execute(int page, int size, Integer ownerId) {
-        List<Book> books = bookRepository.findAllByOwner(ownerId, page, size);
+        List<Book> books = bookRepository.findAllByOwner(page, size, ownerId);
         long total = bookRepository.countByOwner(ownerId);
         return new PageResult<>(books, page, size, total);
     }

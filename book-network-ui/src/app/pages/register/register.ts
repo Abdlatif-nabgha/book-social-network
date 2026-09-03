@@ -95,7 +95,11 @@ export class Register {
           } else if (err.message) {
             this.errorMessage.set([err.message]);
           } else {
-            this.errorMessage.set(['An error occurred during registration']);
+            if (err.status === 0) {
+              this.errorMessage.set(['Please check your internet connection']);
+            } else {
+              this.errorMessage.set(['An error occurred during registration']);
+            }
           }
         }
       });

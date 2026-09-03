@@ -93,7 +93,12 @@ export class Login {
               this.errorMessage.set([err.error.message]);
             }
           } else {
-            this.errorMessage.set(['An error occurred']);
+            // if internet connection is lost 
+            if (err.status === 0) {
+              this.errorMessage.set(['Please check your internet connection']);
+            } else {
+              this.errorMessage.set(['An error occurred']);
+            }
           }
         }
       });

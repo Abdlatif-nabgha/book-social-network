@@ -2,6 +2,7 @@ package com.nabgha.book.book.presentation.rest.mapper;
 
 import com.nabgha.book.book.domain.model.Book;
 import com.nabgha.book.book.domain.service.BookRatingService;
+import com.nabgha.book.book.infrastructure.file.FileStoragePort;
 import com.nabgha.book.book.presentation.rest.dto.BookResponse;
 import com.nabgha.book.common.domain.PageResult;
 import com.nabgha.book.common.presentation.PageResponse;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class BookDtoMapper {
 
     private final BookRatingService bookRatingService;
+    private final FileStoragePort fileStoragePort;
 
     public BookResponse toResponse(Book book) {
         return BookResponse.builder()
@@ -25,7 +27,7 @@ public class BookDtoMapper {
                 .archived(book.isArchived())
                 .ownerId(book.getOwnerId())
                 .ownerName(book.getOwnerName())
-                .bookCover(book.getBookCover())
+                .bookCover(fileStoragePort.read(book.getBookCover()))
                 .rate(bookRatingService.calculateAverageRating(book.getId()))
                 .build();
     }

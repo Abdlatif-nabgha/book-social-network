@@ -13,6 +13,6 @@ public record BookResponse(
         boolean archived,
         Integer ownerId,
         String ownerName,
-        String bookCover,
+        byte[] bookCover,
         double rate
 ) {}

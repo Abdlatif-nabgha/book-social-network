@@ -85,7 +85,12 @@ export class ActivateAccount implements OnInit {
           } else if (err.message) {
             this.errorMessage.set([err.message]);
           } else {
-            this.errorMessage.set(['An error occurred during activation. Please make sure the code is correct.']);
+            // if internet connection is lost 
+            if (err.status === 0) {
+              this.errorMessage.set(['Please check your internet connection']);
+            } else {
+              this.errorMessage.set(['An error occurred during activation. Please make sure the code is correct.']);
+            }
           }
         }
       });

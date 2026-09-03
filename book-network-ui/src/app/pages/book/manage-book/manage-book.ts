@@ -32,7 +32,7 @@ export class ManageBook implements OnInit {
   };
 
   selectedPicture: File | null = null;
-  picturePreviewUrl: string | null = null;
+  picturePreviewUrl = signal<string | null>(null);
   loading = signal<boolean>(false);
   errorMessage = signal<Array<string>>([]);
 
@@ -68,7 +68,7 @@ export class ManageBook implements OnInit {
               shareable: book.shareable || false
             };
             if (book.bookCover) {
-              this.picturePreviewUrl = 'data:image/jpeg;base64,' + book.bookCover;
+              this.picturePreviewUrl.set('data:image/jpeg;base64,' + book.bookCover);
             }
           }
         },
@@ -85,7 +85,7 @@ export class ManageBook implements OnInit {
       this.selectedPicture = input.files[0];
       const reader = new FileReader();
       reader.onload = () => {
-        this.picturePreviewUrl = reader.result as string;
+        this.picturePreviewUrl.set(reader.result as string);
       };
       reader.readAsDataURL(this.selectedPicture);
     }
@@ -148,13 +148,31 @@ export class ManageBook implements OnInit {
         },
         error: (err) => {
           this.loading.set(false);
-          console.error(err);
+          console.error('Error saving book:', err);
           if (err.error?.validationErrors) {
-            this.errorMessage.set(err.error.validationErrors);
+            if (Array.isArray(err.error.validationErrors)) {
+              this.errorMessage.set(err.error.validationErrors);
+            } else if (typeof err.error.validationErrors === 'object') {
+              this.errorMessage.set(Object.values(err.error.validationErrors));
+            } else {
+              this.errorMessage.set([String(err.error.validationErrors)]);
+            }
+          } else if (err.error?.error) {
+            this.errorMessage.set([err.error.error]);
+          } else if (err.error?.businessErrorDescription) {
+            this.errorMessage.set([err.error.businessErrorDescription]);
           } else if (err.error?.errorMsg) {
             this.errorMessage.set([err.error.errorMsg]);
+          } else if (err.error?.message) {
+            this.errorMessage.set([err.error.message]);
           } else {
-            this.errorMessage.set(['An error occurred while saving the book.']);
+            if (err.status === 0) {
+              this.errorMessage.set(['Please check your internet connection or server availability.']);
+            } else if (err.status === 401 || err.status === 403) {
+              this.errorMessage.set(['You are not authorized. Please log in again.']);
+            } else {
+              this.errorMessage.set(['An error occurred while saving the book.']);
+            }
           }
         }
       });
@@ -175,8 +193,9 @@ export class ManageBook implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        console.error(err);
-        this.errorMessage.set(['Book was saved but cover image upload failed.']);
+        console.error('Error uploading cover picture:', err);
+        const uploadError = err.error?.error || err.error?.message || 'Book was saved but cover image upload failed.';
+        this.errorMessage.set([uploadError]);
       }
     });
   }
