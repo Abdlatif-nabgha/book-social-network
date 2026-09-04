@@ -1,6 +1,11 @@
 spring:
   config:
-    import: "optional:file:.env[.properties]"
+    import: 
+      - "optional:file:.env[.properties]"
+      - "optional:file:../.env[.properties]"
+  docker:
+    compose:
+      file: ../compose.yaml
   profiles:
     active: dev
   servlet:
