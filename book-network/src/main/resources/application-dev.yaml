@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/book_social_network
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -21,8 +21,8 @@ spring:
   application:
     security:
       jwt:
-        secret-key: ${JWT_SECRET}
-        expiration: ${JWT_EXPIRATION}
+        secret-key: ${JWT_SECRET:HVH1a4Pke93rIXnnghrd4PeVnOC715IIbGUwowbt8+w=}
+        expiration: ${JWT_EXPIRATION:8640000}
     mailing:
       frontend:
         activation-url: http://localhost:4200/activate-account

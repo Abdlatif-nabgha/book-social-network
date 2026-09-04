@@ -24,7 +24,7 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
-    @Value("${SENDER_EMAIL}")
+    @Value("${SENDER_EMAIL:contact@booksocial.com}")
     private String senderEmail;
 
     @Async
