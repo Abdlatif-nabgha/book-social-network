@@ -5,9 +5,9 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 # 1. Copy package files and install dependencies
-COPY package*.json ./
-# Using npm ci for reliable builds
-RUN npm ci
+COPY package*.json .npmrc* ./
+RUN npm ci --legacy-peer-deps
+
 
 # 2. Copy source code and build the application
 COPY . .
