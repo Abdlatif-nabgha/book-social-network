@@ -44,6 +44,19 @@ services:
     networks:
       - spring-demo
     restart: unless-stopped
+  bsn-ui:
+    container_name: bsn-ui
+    build:
+      context: ./book-network-ui
+      dockerfile: ../docker/frontend/Dockerfile
+    image: bsn-frontend:latest
+    ports:
+      - "4200:80"
+    depends_on:
+      - bsn-api
+    networks:
+      - spring-demo
+    restart: unless-stopped
 
 networks:
   spring-demo:

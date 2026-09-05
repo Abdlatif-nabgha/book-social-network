@@ -31,7 +31,8 @@ spring:
         photos-output-path: ./uploads
     cors:
       allowed-origins:
-        - http://localhost:4200   # Angular's default dev port
+        - http://localhost:4200 # Angular's default dev port
+        - http://localhost:8080
 
 logging:
   level:
