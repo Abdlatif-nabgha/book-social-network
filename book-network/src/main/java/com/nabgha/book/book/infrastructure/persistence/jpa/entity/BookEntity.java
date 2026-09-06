@@ -7,6 +7,7 @@ import com.nabgha.book.user.infrastructure.persistence.jpa.entity.UserEntity;
 import com.nabgha.book.history.infrastructure.persistence.jpa.entity.BookTransactionHistoryEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,9 +37,11 @@ public class BookEntity extends BaseEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
+    @Builder.Default
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FeedbackEntity> feedbacks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "book")
     private List<BookTransactionHistoryEntity> histories = new ArrayList<>();
 
