@@ -6,12 +6,14 @@ import { heroBookOpenSolid, heroUsersSolid, heroArrowRightSolid } from '@ng-icon
 
 import { routes } from './app.routes';
 import { httpTokenInterceptor } from './services/interceptor/http-token.interceptor';
+import { provideApiConfiguration } from './services/api-configuration';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([httpTokenInterceptor])),
-    provideIcons({ heroBookOpenSolid, heroUsersSolid, heroArrowRightSolid })
+    provideIcons({ heroBookOpenSolid, heroUsersSolid, heroArrowRightSolid }),
+    provideApiConfiguration('/api/v1')
   ]
 };

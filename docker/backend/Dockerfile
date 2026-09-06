@@ -25,9 +25,5 @@ COPY --from=build /build/target/book-network-api*.jar app.jar
 # Expose backend port
 EXPOSE 8080
 
-# Configure Spring Boot environment defaults
-ENV SPRING_PROFILES_ACTIVE=dev
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-sql-bsn:5432/book_social_network
-
 # Run the application with exec form for graceful shutdown support
 ENTRYPOINT ["java", "-jar", "app.jar"]
