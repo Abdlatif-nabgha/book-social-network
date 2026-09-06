@@ -22,16 +22,17 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
+          cache-dependency-path: 'book-network/pom.xml'
 
       - name: Compile Backend
         run: |
           cd book-network
-          ./mvnw clean compile
+          mvn clean compile
 
   unit-tests:
     name: Run Unit Tests
@@ -44,16 +45,17 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
+          cache-dependency-path: 'book-network/pom.xml'
 
       - name: Execute Unit Tests
         run: |
           cd book-network
-          ./mvnw clean test
+          mvn clean test
 
   build-and-push-docker:
     name: Build & Push Docker Image
@@ -66,17 +68,18 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
+          cache-dependency-path: 'book-network/pom.xml'
 
       - name: Extract Project Version from POM
         id: extract_version
         run: |
           cd book-network
-          VERSION=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
+          VERSION=$(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
