@@ -41,9 +41,67 @@ resource "aws_iam_role_policy" "eks_nodes_s3" {
         Action = [
           "s3:PutObject",
           "s3:GetObject",
-          "s3:DeleteObject"
+          "s3:DeleteObject",
+          "s3:ListBucket"
         ]
-        Resource = "${aws_s3_bucket.book_covers.arn}/*"
+        Resource = [
+          aws_s3_bucket.book_covers.arn,
+          "${aws_s3_bucket.book_covers.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+# ============================================
+# IAM Role for Backend Pods (IRSA)
+# ============================================
+resource "aws_iam_role" "backend_s3" {
+  name = "${var.project_name}-backend-s3-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.eks.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount:bsn:bsn-backend-sa"
+            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:aud" = "sts.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name = "${var.project_name}-backend-s3-role"
+  }
+}
+
+resource "aws_iam_role_policy" "backend_s3" {
+  name = "${var.project_name}-backend-s3-policy"
+  role = aws_iam_role.backend_s3.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.book_covers.arn,
+          "${aws_s3_bucket.book_covers.arn}/*"
+        ]
       }
     ]
   })

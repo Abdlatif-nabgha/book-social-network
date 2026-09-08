@@ -41,5 +41,10 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.book_covers.id
 }
 
+output "backend_s3_role_arn" {
+  description = "ARN of the IAM Role for backend IRSA"
+  value       = aws_iam_role.backend_s3.arn
+}
+
 
 

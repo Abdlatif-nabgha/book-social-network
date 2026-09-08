@@ -15,6 +15,7 @@ spec:
       labels:
         app: bsn-backend
     spec:
+      serviceAccountName: bsn-backend-sa
       containers:
         - name: bsn-backend
           image: 825386256502.dkr.ecr.us-east-1.amazonaws.com/bsn-api:latest
