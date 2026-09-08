@@ -49,7 +49,7 @@ variable "db_password" {
 variable "eks_cluster_version" {
   description = "Kubernetes version for the EKS cluster"
   type        = string
-  default     = "1.30"
+  default     = "1.32"
 }
 
 variable "eks_node_instance_type" {

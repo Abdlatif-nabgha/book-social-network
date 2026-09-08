@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bsn-frontend-service
+  namespace: bsn
+  labels:
+    app: bsn-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: bsn-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

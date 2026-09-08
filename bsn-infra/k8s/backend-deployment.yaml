@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bsn-backend
+  namespace: bsn
+  labels:
+    app: bsn-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bsn-backend
+  template:
+    metadata:
+      labels:
+        app: bsn-backend
+    spec:
+      containers:
+        - name: bsn-backend
+          image: 825386256502.dkr.ecr.us-east-1.amazonaws.com/bsn-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: bsn-backend-config
+            - secretRef:
+                name: bsn-backend-secret
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "384Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+          readinessProbe:
+            httpGet:
+              path: /api/v1/v3/api-docs
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 5
+          volumeMounts:
+            - name: uploads-volume
+              mountPath: /app/uploads
+      volumes:
+        - name: uploads-volume
+          emptyDir: {}

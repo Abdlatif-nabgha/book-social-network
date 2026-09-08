@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bsn-backend-config
+  namespace: bsn
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://bsn-postgres.cszmkg22qr9h.us-east-1.rds.amazonaws.com:5432/book_social_network"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  MAIL_HOST: "email-smtp.us-east-1.amazonaws.com"
+  MAIL_PORT: "587"
+  FRONTEND_ACTIVATION_URL: "http://k8s-bsn-bsningre-951f0271d1-1276314972.us-east-1.elb.amazonaws.com/activate-account"
+  FRONTEND_ORIGIN: "http://k8s-bsn-bsningre-951f0271d1-1276314972.us-east-1.elb.amazonaws.com"
+  FILE_UPLOAD_PATH: "/app/uploads"
