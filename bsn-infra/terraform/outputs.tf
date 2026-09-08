@@ -36,4 +36,10 @@ output "vpc_id" {
   value       = aws_vpc.main.id
 }
 
+output "s3_bucket_name" {
+  description = "Name of the S3 bucket for book covers"
+  value       = aws_s3_bucket.book_covers.id
+}
+
+
 

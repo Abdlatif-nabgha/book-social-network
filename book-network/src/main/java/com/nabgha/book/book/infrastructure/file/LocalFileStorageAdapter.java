@@ -10,8 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.springframework.context.annotation.Profile;
+
 @Slf4j
 @Component
+@Profile("!prod")
 public class LocalFileStorageAdapter implements FileStoragePort {
 
     @Value("${spring.application.file.upload.photos-output-path}")
