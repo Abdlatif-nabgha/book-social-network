@@ -12,3 +12,6 @@ data:
   FRONTEND_ACTIVATION_URL: "http://k8s-bsn-bsningre-951f0271d1-1276314972.us-east-1.elb.amazonaws.com/activate-account"
   FRONTEND_ORIGIN: "http://k8s-bsn-bsningre-951f0271d1-1276314972.us-east-1.elb.amazonaws.com"
   FILE_UPLOAD_PATH: "/app/uploads"
+  AWS_S3_BUCKET_NAME: "bsn-book-covers-825386256502"
+  AWS_REGION: "us-east-1"
+
