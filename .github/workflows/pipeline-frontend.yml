@@ -79,3 +79,12 @@ jobs:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/bsn-ui:${{ steps.extract_version.outputs.VERSION }}
             ${{ steps.login-ecr.outputs.registry }}/bsn-ui:latest
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name bsn-cluster
+
+      - name: Deploy to EKS (Rolling Update)
+        run: |
+          kubectl rollout restart deployment bsn-frontend -n bsn
+          kubectl rollout status deployment bsn-frontend -n bsn --timeout=120s
