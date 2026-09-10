@@ -10,6 +10,7 @@ import { PageResponseBorrowedBookResponse } from '../../../services/models/page-
 import { findAllBorrowedBooks } from '../../../services/fn/book-transaction-history/find-all-borrowed-books';
 import { returnBorrowedBook } from '../../../services/fn/book-transaction-history/return-borrowed-book';
 import { saveFeedback } from '../../../services/fn/feedback/save-feedback';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-borrowed-books',
@@ -31,8 +32,6 @@ export class BorrowedBooks implements OnInit {
   returning = signal<boolean>(false);
 
   errorMessage = signal<string>('');
-  successMessage = signal<string>('');
-  showToast = signal<boolean>(false);
 
   // Return Book Confirmation Modal
   selectedBookToReturn = signal<BorrowedBookResponse | null>(null);
@@ -48,7 +47,8 @@ export class BorrowedBooks implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -67,7 +67,8 @@ export class BorrowedBooks implements OnInit {
         error: (err) => {
           this.loading.set(false);
           console.error('Failed to load borrowed books', err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Could not load your borrowed books.');
+          const msg = err.error?.error || err.error?.message || 'Could not load your borrowed books.';
+          this.errorMessage.set(msg);
         }
       });
   }
@@ -99,16 +100,16 @@ export class BorrowedBooks implements OnInit {
         next: () => {
           this.returning.set(false);
           this.closeReturnModal();
-          this.successMessage.set(`"${book.title}" marked as returned! Waiting for owner's approval.`);
-          this.showToast.set(true);
+          this.toastr.success(`"${book.title}" marked as returned! Waiting for owner's approval.`, 'Return Requested');
           this.fetchBorrowedBooks();
-          setTimeout(() => this.showToast.set(false), 4000);
         },
         error: (err) => {
           this.returning.set(false);
           this.closeReturnModal();
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to return the book.');
+          const msg = err.error?.error || err.error?.message || 'Failed to return the book.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Return Failed');
         }
       });
   }
@@ -142,14 +143,14 @@ export class BorrowedBooks implements OnInit {
       next: () => {
         this.submittingFeedback.set(false);
         this.closeFeedbackModal();
-        this.successMessage.set('Feedback submitted successfully! Thank you.');
-        this.showToast.set(true);
-        setTimeout(() => this.showToast.set(false), 3500);
+        this.toastr.success('Feedback submitted successfully! Thank you.', 'Feedback Submitted');
       },
       error: (err) => {
         this.submittingFeedback.set(false);
         console.error(err);
-        this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to submit feedback.');
+        const msg = err.error?.error || err.error?.message || 'Failed to submit feedback.';
+        this.errorMessage.set(msg);
+        this.toastr.error(msg, 'Feedback Failed');
       }
     });
   }

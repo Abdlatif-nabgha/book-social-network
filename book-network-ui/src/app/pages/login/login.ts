@@ -1,13 +1,14 @@
-import { Component, signal, Signal } from '@angular/core';
-import {AuthenticationRequest} from '../../services/models/authentication-request';
-import {FormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
-import {authenticate} from '../../services/fn/authentication/authenticate';
-import {HttpClient} from '@angular/common/http';
-import {ApiConfiguration} from '../../services/api-configuration';
+import { Component, signal } from '@angular/core';
+import { AuthenticationRequest } from '../../services/models/authentication-request';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { authenticate } from '../../services/fn/authentication/authenticate';
+import { HttpClient } from '@angular/common/http';
+import { ApiConfiguration } from '../../services/api-configuration';
 import { Token } from '../../services/token/token';
 import { timeout } from 'rxjs';
 import { ValidationUtils } from '../../services/utils/validation-utils';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,8 @@ export class Login {
     private router: Router,
     private http: HttpClient,
     private apiConfig: ApiConfiguration,
-    private tokenService: Token
+    private tokenService: Token,
+    private toastr: ToastrService
   ) {}
 
   protected login() {
@@ -50,10 +52,11 @@ export class Login {
     
     if (errors.length > 0) {
       this.errorMessage.set(errors);
+      this.toastr.error(errors[0], 'Validation Error');
       return;
     }
     
-    this.loading.set(true); // start loading here
+    this.loading.set(true);
 
     authenticate(this.http, this.apiConfig.rootUrl, { body: this.authRequest })
       .pipe(timeout(5000))
@@ -64,6 +67,7 @@ export class Login {
           if (authResponse && authResponse.data?.token) {
             this.tokenService.token = authResponse.data.token as string;
           }
+          this.toastr.success('Welcome back!', 'Login Successful');
           this.router.navigate(['books']).catch(() => {
             console.error('Navigation to books failed');
           });
@@ -72,34 +76,42 @@ export class Login {
           this.loading.set(false);
 
           if (err && err.name === 'TimeoutError') {
-            this.errorMessage.set(['The server is taking too long to respond. Please try your backend connection.']);
+            const msg = 'The server is taking too long to respond. Please check your backend connection.';
+            this.errorMessage.set([msg]);
+            this.toastr.error(msg, 'Connection Timeout');
             return;
           }
 
+          let errorMsg = 'An error occurred';
           if (err.error?.validationErrors) {
-            this.errorMessage.set(err.error.validationErrors);
+            const valErrors = Array.isArray(err.error.validationErrors) ? err.error.validationErrors : [String(err.error.validationErrors)];
+            this.errorMessage.set(valErrors);
+            errorMsg = valErrors[0];
           } else if (err.error?.errorMsg) {
             this.errorMessage.set([err.error.errorMsg]);
+            errorMsg = err.error.errorMsg;
           } else if (err.error?.error) {
             if (err.error.error.includes('User is disabled') || err.error.error.includes('DisabledException')) {
-              this.errorMessage.set(['Your account is not activated yet. Please check your email for the activation code.']);
+              errorMsg = 'Your account is not activated yet. Please check your email for the activation code.';
             } else {
-              this.errorMessage.set([err.error.error]);
+              errorMsg = err.error.error;
             }
+            this.errorMessage.set([errorMsg]);
           } else if (err.error?.message) {
             if (err.error.message.includes('User is disabled') || err.error.message.includes('DisabledException')) {
-              this.errorMessage.set(['Your account is not activated yet. Please check your email for the activation code.']);
+              errorMsg = 'Your account is not activated yet. Please check your email for the activation code.';
             } else {
-              this.errorMessage.set([err.error.message]);
+              errorMsg = err.error.message;
             }
+            this.errorMessage.set([errorMsg]);
           } else {
-            // if internet connection is lost 
             if (err.status === 0) {
-              this.errorMessage.set(['Please check your internet connection']);
-            } else {
-              this.errorMessage.set(['An error occurred']);
+              errorMsg = 'Please check your internet connection';
             }
+            this.errorMessage.set([errorMsg]);
           }
+
+          this.toastr.error(errorMsg, 'Login Failed');
         }
       });
   }

@@ -7,6 +7,7 @@ import { Token } from '../../services/token/token';
 import { ApiConfiguration } from '../../services/api-configuration';
 import { getUserProfile, UserProfileResponse } from '../../services/fn/user/get-user-profile';
 import { updateUserProfile } from '../../services/fn/user/update-user-profile';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-menu',
@@ -43,7 +44,8 @@ export class Menu implements OnInit {
     public tokenService: Token,
     private http: HttpClient,
     private apiConfig: ApiConfiguration,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -96,7 +98,6 @@ export class Menu implements OnInit {
         error: (err) => {
           this.loadingProfile.set(false);
           console.error('Failed to load profile', err);
-          // Fallback to token values
           const parts = (this.tokenService.userFullName || '').split(' ');
           this.editFirstName.set(parts[0] || '');
           this.editLastName.set(parts.slice(1).join(' ') || '');
@@ -110,7 +111,9 @@ export class Menu implements OnInit {
 
   saveProfile() {
     if (!this.editFirstName().trim() || !this.editLastName().trim()) {
-      this.profileError.set('First name and Last name are required.');
+      const msg = 'First name and Last name are required.';
+      this.profileError.set(msg);
+      this.toastr.error(msg, 'Validation Error');
       return;
     }
 
@@ -136,6 +139,7 @@ export class Menu implements OnInit {
           this.refreshLocalUserInfo();
         }
         this.profileSuccess.set('Profile updated successfully!');
+        this.toastr.success('Profile updated successfully!', 'Success');
         setTimeout(() => {
           this.profileSuccess.set('');
         }, 3000);
@@ -143,7 +147,9 @@ export class Menu implements OnInit {
       error: (err) => {
         this.savingProfile.set(false);
         console.error('Failed to update profile', err);
-        this.profileError.set(err.error?.error || err.error?.message || 'Failed to update profile.');
+        const msg = err.error?.error || err.error?.message || 'Failed to update profile.';
+        this.profileError.set(msg);
+        this.toastr.error(msg, 'Profile Error');
       }
     });
   }
@@ -153,6 +159,7 @@ export class Menu implements OnInit {
     this.closeMobileMenu();
     this.closeProfileModal();
     this.tokenService.clear();
+    this.toastr.info('You have been logged out.', 'Goodbye');
     this.router.navigate(['login']).catch(err => {
       console.error('Logout navigation failed', err);
     });

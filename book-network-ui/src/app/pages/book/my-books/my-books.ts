@@ -8,9 +8,9 @@ import { ApiConfiguration } from '../../../services/api-configuration';
 import { PageResponseBookResponse } from '../../../services/models/page-response-book-response';
 import { Menu } from '../../../components/menu/menu';
 import { CommonModule } from '@angular/common';
-
 import { updateArchivedStatus } from '../../../services/fn/book/update-archived-status';
 import { deleteBook } from '../../../services/fn/book/delete-book';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-my-books',
@@ -27,8 +27,6 @@ export class MyBooks implements OnInit {
   page = 0;
   size = 8;
   errorMessage = signal<string>('');
-  successMessage = signal<string>('');
-  showToast = signal<boolean>(false);
   loading = signal<boolean>(true);
 
   // Delete modal state
@@ -40,15 +38,14 @@ export class MyBooks implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (params['saved']) {
-        this.successMessage.set('Book saved successfully!');
-        this.showToast.set(true);
-        setTimeout(() => this.showToast.set(false), 4000);
+        this.toastr.success('Book saved successfully!', 'Success');
       }
     });
     this.fetchUserBooks();
@@ -66,7 +63,8 @@ export class MyBooks implements OnInit {
         error: (err) => {
           this.loading.set(false);
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Could not load your books.');
+          const msg = err.error?.error || err.error?.message || 'Could not load your books.';
+          this.errorMessage.set(msg);
         }
       });
   }
@@ -104,13 +102,14 @@ export class MyBooks implements OnInit {
           } else {
             book.shareable = !book.shareable;
           }
-          this.successMessage.set(book.shareable ? `"${book.title}" is now shareable.` : `"${book.title}" is now private.`);
-          this.showToast.set(true);
-          setTimeout(() => this.showToast.set(false), 3000);
+          const msg = book.shareable ? `"${book.title}" is now shareable.` : `"${book.title}" is now private.`;
+          this.toastr.success(msg, 'Status Updated');
         },
         error: (err) => {
           console.error('Failed to update shareable status', err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to update shareable status.');
+          const msg = err.error?.error || err.error?.message || 'Failed to update shareable status.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Update Failed');
         }
       });
   }
@@ -128,13 +127,14 @@ export class MyBooks implements OnInit {
           } else {
             book.archived = !book.archived;
           }
-          this.successMessage.set(book.archived ? `"${book.title}" is now archived and private.` : `"${book.title}" restored from archive.`);
-          this.showToast.set(true);
-          setTimeout(() => this.showToast.set(false), 3000);
+          const msg = book.archived ? `"${book.title}" is now archived and private.` : `"${book.title}" restored from archive.`;
+          this.toastr.success(msg, 'Status Updated');
         },
         error: (err) => {
           console.error('Failed to update archive status', err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to update archive status.');
+          const msg = err.error?.error || err.error?.message || 'Failed to update archive status.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Update Failed');
         }
       });
   }
@@ -161,16 +161,16 @@ export class MyBooks implements OnInit {
         next: () => {
           this.deleting.set(false);
           this.closeDeleteModal();
-          this.successMessage.set(`"${book.title}" was permanently deleted.`);
-          this.showToast.set(true);
+          this.toastr.success(`"${book.title}" was permanently deleted.`, 'Book Deleted');
           this.fetchUserBooks();
-          setTimeout(() => this.showToast.set(false), 3500);
         },
         error: (err) => {
           this.deleting.set(false);
           this.closeDeleteModal();
           console.error('Failed to delete book', err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to delete book. Please ensure it is not currently borrowed.');
+          const msg = err.error?.error || err.error?.message || 'Failed to delete book. Please ensure it is not currently borrowed.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Delete Failed');
         }
       });
   }

@@ -1,9 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+@import "ngx-toastr/toastr";
 @import "tailwindcss";
 
 body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Simple, clean, crisp styling for ngx-toastr without annoying bounce/slide transitions */
+.toast-container .ngx-toastr {
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 12px 16px 12px 50px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.875rem !important;
+  line-height: 1.35 !important;
+  opacity: 1 !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.toast-container .ngx-toastr:hover {
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15) !important;
+}
+
+.toast-container .toast-title {
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  margin-bottom: 2px !important;
+}
+
+.toast-container .toast-message {
+  font-size: 0.8125rem !important;
+  opacity: 0.95 !important;
+}
+
+.toast-container .toast-close-button {
+  top: -6px !important;
+  right: -2px !important;
+  text-shadow: none !important;
+  color: #fff !important;
+  opacity: 0.7 !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.toast-container .toast-close-button:hover {
+  opacity: 1 !important;
 }

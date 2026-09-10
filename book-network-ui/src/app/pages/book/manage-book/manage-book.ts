@@ -9,8 +9,8 @@ import { ApiConfiguration } from '../../../services/api-configuration';
 import { Menu } from '../../../components/menu/menu';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
 import { deleteBook } from '../../../services/fn/book/delete-book';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-manage-book',
@@ -44,7 +44,8 @@ export class ManageBook implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    private toastr: ToastrService
   ) {}
 
   openDeleteModal() {
@@ -65,13 +66,16 @@ export class ManageBook implements OnInit {
         next: () => {
           this.deleting.set(false);
           this.closeDeleteModal();
+          this.toastr.success('Book permanently deleted.', 'Deleted');
           this.router.navigate(['books/my-books']).catch(err => console.error(err));
         },
         error: (err) => {
           this.deleting.set(false);
           this.closeDeleteModal();
           console.error('Error deleting book:', err);
-          this.errorMessage.set([err.error?.error || err.error?.message || 'Failed to delete book. Ensure it is not currently borrowed.']);
+          const msg = err.error?.error || err.error?.message || 'Failed to delete book. Ensure it is not currently borrowed.';
+          this.errorMessage.set([msg]);
+          this.toastr.error(msg, 'Delete Failed');
         }
       });
   }
@@ -107,7 +111,9 @@ export class ManageBook implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage.set(['Failed to load the book details.']);
+          const msg = 'Failed to load the book details.';
+          this.errorMessage.set([msg]);
+          this.toastr.error(msg, 'Error');
         }
       });
   }
@@ -140,27 +146,12 @@ export class ManageBook implements OnInit {
 
     if (errors.length > 0) {
       this.errorMessage.set(errors);
+      this.toastr.error(errors[0], 'Validation Error');
       return;
     }
 
     this.loading.set(true);
 
-    // If editing, map the request body correctly. Note: saveBook API saves or updates depending on body
-    const bodyPayload = {
-      ...this.bookRequest,
-      // If we are editing, we can pass id inside the body if supported by the backend model, or it handles it.
-      // Let's check: BookRequest type doesn't have id, but the saveBook endpoint PATH is '/books'.
-      // If the backend saveBook usecase updates if the book exists or if it determines by ISBN, we pass it.
-      // Let's pass the ID by casting if the model has a hidden id or let the database handle it.
-      // Actually, since BookRequest doesn't have ID, does it update by ID if we add it? Let's check BookRequest definition:
-      // It has only author, isbn, shareable, synopsis, title. Let's see if we cast to any or if saveBook handles ID differently.
-      // Wait, let's see how the saveBook endpoint updates the book in BookController.
-    };
-
-    // If editing, does the payload need an ID?
-    // Let's inspect BookRequest model or check the backend saveBook endpoint to see if it takes id in BookRequest.
-    // In book-request.ts, there was no id. But maybe they have another field or we can just send it.
-    // Wait, let's cast bodyPayload to any and attach 'id' if editing so the backend knows which book to update!
     const payload: any = { ...this.bookRequest };
     if (this.bookId) {
       payload.id = this.bookId;
@@ -176,37 +167,42 @@ export class ManageBook implements OnInit {
             this.uploadCoverPicture(bookIdToUse);
           } else {
             this.loading.set(false);
-            this.router.navigate(['books/my-books'], { queryParams: { saved: 'true' } }).catch(err => console.error(err));
+            this.toastr.success('Book saved successfully!', 'Success');
+            this.router.navigate(['books/my-books']).catch(err => console.error(err));
           }
         },
         error: (err) => {
           this.loading.set(false);
           console.error('Error saving book:', err);
+          let errorMsgs: string[] = [];
           if (err.error?.validationErrors) {
             if (Array.isArray(err.error.validationErrors)) {
-              this.errorMessage.set(err.error.validationErrors);
+              errorMsgs = err.error.validationErrors;
             } else if (typeof err.error.validationErrors === 'object') {
-              this.errorMessage.set(Object.values(err.error.validationErrors));
+              errorMsgs = Object.values(err.error.validationErrors);
             } else {
-              this.errorMessage.set([String(err.error.validationErrors)]);
+              errorMsgs = [String(err.error.validationErrors)];
             }
           } else if (err.error?.error) {
-            this.errorMessage.set([err.error.error]);
+            errorMsgs = [err.error.error];
           } else if (err.error?.businessErrorDescription) {
-            this.errorMessage.set([err.error.businessErrorDescription]);
+            errorMsgs = [err.error.businessErrorDescription];
           } else if (err.error?.errorMsg) {
-            this.errorMessage.set([err.error.errorMsg]);
+            errorMsgs = [err.error.errorMsg];
           } else if (err.error?.message) {
-            this.errorMessage.set([err.error.message]);
+            errorMsgs = [err.error.message];
           } else {
             if (err.status === 0) {
-              this.errorMessage.set(['Please check your internet connection or server availability.']);
+              errorMsgs = ['Please check your internet connection or server availability.'];
             } else if (err.status === 401 || err.status === 403) {
-              this.errorMessage.set(['You are not authorized. Please log in again.']);
+              errorMsgs = ['You are not authorized. Please log in again.'];
             } else {
-              this.errorMessage.set(['An error occurred while saving the book.']);
+              errorMsgs = ['An error occurred while saving the book.'];
             }
           }
+
+          this.errorMessage.set(errorMsgs);
+          this.toastr.error(errorMsgs[0], 'Save Failed');
         }
       });
   }
@@ -222,13 +218,15 @@ export class ManageBook implements OnInit {
     }).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigate(['books/my-books'], { queryParams: { saved: 'true' } }).catch(err => console.error(err));
+        this.toastr.success('Book and cover saved successfully!', 'Success');
+        this.router.navigate(['books/my-books']).catch(err => console.error(err));
       },
       error: (err) => {
         this.loading.set(false);
         console.error('Error uploading cover picture:', err);
         const uploadError = err.error?.error || err.error?.message || 'Book was saved but cover image upload failed.';
-        this.errorMessage.set([uploadError]);
+        this.toastr.warning(uploadError, 'Cover Upload Warning');
+        this.router.navigate(['books/my-books']).catch(err => console.error(err));
       }
     });
   }

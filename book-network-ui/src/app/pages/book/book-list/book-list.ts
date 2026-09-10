@@ -8,8 +8,8 @@ import { ApiConfiguration } from '../../../services/api-configuration';
 import { PageResponseBookResponse } from '../../../services/models/page-response-book-response';
 import { Menu } from '../../../components/menu/menu';
 import { CommonModule } from '@angular/common';
-
 import { Token } from '../../../services/token/token';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-book-list',
@@ -26,15 +26,14 @@ export class BookList implements OnInit {
   page = 0;
   size = 8;
   errorMessage = signal<string>('');
-  successMessage = signal<string>('');
-  showToast = signal<boolean>(false);
   loading = signal<boolean>(true);
 
   constructor(
     private router: Router,
     private http: HttpClient,
     private apiConfig: ApiConfiguration,
-    public tokenService: Token
+    public tokenService: Token,
+    private toastr: ToastrService
   ) {}
 
   isOwner(book: BookResponse): boolean {
@@ -71,7 +70,8 @@ export class BookList implements OnInit {
         error: (err) => {
           this.loading.set(false);
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to load books. Please check your connection.');
+          const msg = err.error?.error || err.error?.message || 'Failed to load books. Please check your connection.';
+          this.errorMessage.set(msg);
         }
       });
   }
@@ -85,23 +85,18 @@ export class BookList implements OnInit {
     if (event) event.stopPropagation();
     if (!book.id) return;
     this.errorMessage.set('');
-    this.successMessage.set('');
     
     borrowBook(this.http, this.apiConfig.rootUrl, { bookId: book.id })
       .subscribe({
         next: () => {
-          this.successMessage.set(`Successfully borrowed "${book.title}"!`);
-          this.showToast.set(true);
+          this.toastr.success(`Successfully borrowed "${book.title}"!`, 'Success');
           this.fetchDisplayableBooks(); // Refresh list
-          setTimeout(() => this.showToast.set(false), 3500);
         },
         error: (err) => {
           console.error(err);
-          if (err.error?.error) {
-            this.errorMessage.set(err.error.error);
-          } else {
-            this.errorMessage.set(`Could not borrow "${book.title}". It might be already borrowed.`);
-          }
+          const errorMsg = err.error?.error || err.error?.message || `Could not borrow "${book.title}". It might be already borrowed.`;
+          this.errorMessage.set(errorMsg);
+          this.toastr.error(errorMsg, 'Borrow Failed');
         }
       });
   }

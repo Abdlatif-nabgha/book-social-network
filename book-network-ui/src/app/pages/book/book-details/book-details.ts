@@ -15,6 +15,7 @@ import { deleteBook } from '../../../services/fn/book/delete-book';
 import { findAllFeedbacksByBook } from '../../../services/fn/feedback/find-all-feedbacks-by-book';
 import { saveFeedback } from '../../../services/fn/feedback/save-feedback';
 import { PageResponseFeedbackResponse } from '../../../services/models/page-response-feedback-response';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-book-details',
@@ -39,8 +40,6 @@ export class BookDetails implements OnInit {
   showDeleteModal = signal<boolean>(false);
   
   errorMessage = signal<string>('');
-  successMessage = signal<string>('');
-  showToast = signal<boolean>(false);
 
   // Review form
   newRating = signal<number>(5);
@@ -51,7 +50,8 @@ export class BookDetails implements OnInit {
     private router: Router,
     private http: HttpClient,
     private apiConfig: ApiConfiguration,
-    public tokenService: Token
+    public tokenService: Token,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -77,7 +77,8 @@ export class BookDetails implements OnInit {
         error: (err) => {
           this.loading.set(false);
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to load book details.');
+          const msg = err.error?.error || err.error?.message || 'Failed to load book details.';
+          this.errorMessage.set(msg);
         }
       });
   }
@@ -114,13 +115,14 @@ export class BookDetails implements OnInit {
     borrowBook(this.http, this.apiConfig.rootUrl, { bookId: currentBook.id })
       .subscribe({
         next: () => {
-          this.successMessage.set(`You borrowed "${currentBook.title}" successfully!`);
-          this.showToast.set(true);
-          setTimeout(() => this.showToast.set(false), 3500);
+          this.toastr.success(`You borrowed "${currentBook.title}" successfully!`, 'Success');
+          if (this.bookId) this.fetchBookDetails(this.bookId);
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Could not borrow this book.');
+          const msg = err.error?.error || err.error?.message || 'Could not borrow this book.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Borrow Failed');
         }
       });
   }
@@ -140,13 +142,14 @@ export class BookDetails implements OnInit {
             this.book.set({ ...currentBook });
           }
           const updated = this.book();
-          this.successMessage.set(updated?.shareable ? 'Book is now shareable in the network.' : 'Book is now private.');
-          this.showToast.set(true);
-          setTimeout(() => this.showToast.set(false), 3000);
+          const msg = updated?.shareable ? 'Book is now shareable in the network.' : 'Book is now private.';
+          this.toastr.success(msg, 'Status Updated');
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to update shareable status.');
+          const msg = err.error?.error || err.error?.message || 'Failed to update shareable status.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Update Failed');
         }
       });
   }
@@ -166,13 +169,14 @@ export class BookDetails implements OnInit {
             this.book.set({ ...currentBook });
           }
           const updated = this.book();
-          this.successMessage.set(updated?.archived ? 'Book archived and made private.' : 'Book restored from archive.');
-          this.showToast.set(true);
-          setTimeout(() => this.showToast.set(false), 3000);
+          const msg = updated?.archived ? 'Book archived and made private.' : 'Book restored from archive.';
+          this.toastr.success(msg, 'Status Updated');
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to update archive status.');
+          const msg = err.error?.error || err.error?.message || 'Failed to update archive status.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Update Failed');
         }
       });
   }
@@ -201,13 +205,16 @@ export class BookDetails implements OnInit {
         next: () => {
           this.deleting.set(false);
           this.closeDeleteModal();
+          this.toastr.success('Book permanently deleted.', 'Deleted');
           this.router.navigate(['books/my-books']).catch(err => console.error(err));
         },
         error: (err) => {
           this.deleting.set(false);
           this.closeDeleteModal();
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to delete book. Please check if it is currently borrowed.');
+          const msg = err.error?.error || err.error?.message || 'Failed to delete book. Please check if it is currently borrowed.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Delete Failed');
         }
       });
   }
@@ -228,18 +235,18 @@ export class BookDetails implements OnInit {
         this.submittingReview.set(false);
         this.newComment.set('');
         this.newRating.set(5);
-        this.successMessage.set('Review submitted successfully!');
-        this.showToast.set(true);
+        this.toastr.success('Review submitted successfully! Thank you.', 'Review Submitted');
         if (this.bookId) {
           this.fetchFeedbacks(this.bookId);
           this.fetchBookDetails(this.bookId); // Refresh rating score
         }
-        setTimeout(() => this.showToast.set(false), 3500);
       },
       error: (err) => {
         this.submittingReview.set(false);
         console.error(err);
-        this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to submit review.');
+        const msg = err.error?.error || err.error?.message || 'Failed to submit review.';
+        this.errorMessage.set(msg);
+        this.toastr.error(msg, 'Review Failed');
       }
     });
   }

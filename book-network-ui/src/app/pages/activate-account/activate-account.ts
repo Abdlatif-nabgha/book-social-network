@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration } from '../../services/api-configuration';
 import { FormsModule } from '@angular/forms';
 import { CodeInputModule } from 'angular-code-input';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-activate-account',
@@ -18,15 +19,14 @@ import { CodeInputModule } from 'angular-code-input';
 export class ActivateAccount implements OnInit {
   tokenCode = '';
   errorMessage = signal<Array<string>>([]);
-  successMessage = signal<string>('');
   loading = signal<boolean>(false);
-  showToast = signal<boolean>(false);
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -43,15 +43,18 @@ export class ActivateAccount implements OnInit {
 
   protected activateAccount() {
     this.errorMessage.set([]);
-    this.successMessage.set('');
 
     const token = this.tokenCode.trim();
     if (!token) {
-      this.errorMessage.set(['Activation code is mandatory']);
+      const msg = 'Activation code is mandatory';
+      this.errorMessage.set([msg]);
+      this.toastr.error(msg, 'Validation Error');
       return;
     }
     if (token.length !== 6) {
-      this.errorMessage.set(['Activation code must be exactly 6 characters long']);
+      const msg = 'Activation code must be exactly 6 characters long';
+      this.errorMessage.set([msg]);
+      this.toastr.error(msg, 'Validation Error');
       return;
     }
 
@@ -61,37 +64,35 @@ export class ActivateAccount implements OnInit {
       .subscribe({
         next: (res) => {
           this.loading.set(false);
-          this.successMessage.set('Your account has been successfully activated!');
-          this.showToast.set(true);
-          
-          setTimeout(() => {
-            this.showToast.set(false);
-            this.router.navigate(['login']).catch((err) => {
-              console.error('Navigation to login failed', err);
-            });
-          }, 3500);
+          this.toastr.success('Your account has been successfully activated!', 'Success');
+          this.router.navigate(['login']).catch((err) => {
+            console.error('Navigation to login failed', err);
+          });
         },
         error: (err) => {
           this.loading.set(false);
           console.error('Activation failed:', err);
+          let errorMsgs: string[] = [];
           if (err.error?.validationErrors) {
-            this.errorMessage.set(err.error.validationErrors);
+            errorMsgs = Array.isArray(err.error.validationErrors) ? err.error.validationErrors : [String(err.error.validationErrors)];
           } else if (err.error?.errorMsg) {
-            this.errorMessage.set([err.error.errorMsg]);
+            errorMsgs = [err.error.errorMsg];
           } else if (err.error?.error) {
-            this.errorMessage.set([err.error.error]);
+            errorMsgs = [err.error.error];
           } else if (err.error?.message) {
-            this.errorMessage.set([err.error.message]);
+            errorMsgs = [err.error.message];
           } else if (err.message) {
-            this.errorMessage.set([err.message]);
+            errorMsgs = [err.message];
           } else {
-            // if internet connection is lost 
             if (err.status === 0) {
-              this.errorMessage.set(['Please check your internet connection']);
+              errorMsgs = ['Please check your internet connection'];
             } else {
-              this.errorMessage.set(['An error occurred during activation. Please make sure the code is correct.']);
+              errorMsgs = ['An error occurred during activation. Please make sure the code is correct.'];
             }
           }
+
+          this.errorMessage.set(errorMsgs);
+          this.toastr.error(errorMsgs[0], 'Activation Failed');
         }
       });
   }

@@ -9,6 +9,7 @@ import { BorrowedBookResponse } from '../../../services/models/borrowed-book-res
 import { PageResponseBorrowedBookResponse } from '../../../services/models/page-response-borrowed-book-response';
 import { findAllReturnedBooks } from '../../../services/fn/book-transaction-history/find-all-returned-books';
 import { approveReturnBorrowedBook } from '../../../services/fn/book-transaction-history/approve-return-borrowed-book';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-returned-books',
@@ -30,8 +31,6 @@ export class ReturnedBooks implements OnInit {
   approving = signal<boolean>(false);
 
   errorMessage = signal<string>('');
-  successMessage = signal<string>('');
-  showToast = signal<boolean>(false);
 
   // Approval Modal State
   selectedBookToApprove = signal<BorrowedBookResponse | null>(null);
@@ -40,7 +39,8 @@ export class ReturnedBooks implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private apiConfig: ApiConfiguration
+    private apiConfig: ApiConfiguration,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +59,8 @@ export class ReturnedBooks implements OnInit {
         error: (err) => {
           this.loading.set(false);
           console.error('Failed to load returned books', err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Could not load returned books.');
+          const msg = err.error?.error || err.error?.message || 'Could not load returned books.';
+          this.errorMessage.set(msg);
         }
       });
   }
@@ -91,16 +92,16 @@ export class ReturnedBooks implements OnInit {
         next: () => {
           this.approving.set(false);
           this.closeApproveModal();
-          this.successMessage.set(`Return of "${book.title}" approved successfully! The book is now available in your library again.`);
-          this.showToast.set(true);
+          this.toastr.success(`Return of "${book.title}" approved successfully! The book is now available in your library again.`, 'Return Approved');
           this.fetchReturnedBooks();
-          setTimeout(() => this.showToast.set(false), 4000);
         },
         error: (err) => {
           this.approving.set(false);
           this.closeApproveModal();
           console.error(err);
-          this.errorMessage.set(err.error?.error || err.error?.message || 'Failed to approve return.');
+          const msg = err.error?.error || err.error?.message || 'Failed to approve return.';
+          this.errorMessage.set(msg);
+          this.toastr.error(msg, 'Approval Failed');
         }
       });
   }
