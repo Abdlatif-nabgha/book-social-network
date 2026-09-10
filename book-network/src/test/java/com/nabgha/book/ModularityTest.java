@@ -3,6 +3,9 @@ package com.nabgha.book;
 import org.junit.jupiter.api.Test;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.docs.Documenter;
+import org.springframework.modulith.docs.Documenter.CanvasOptions;
+import org.springframework.modulith.docs.Documenter.DiagramOptions;
+import org.springframework.modulith.docs.Documenter.DiagramOptions.DiagramStyle;
 
 public class ModularityTest {
 
@@ -16,7 +19,9 @@ public class ModularityTest {
     @Test
     void generateModuleDocumentation() {
         new Documenter(modules)
-                .writeDocumentation()
-                .writeModulesAsPlantUml();
+                .writeDocumentation(
+                        DiagramOptions.defaults().withStyle(DiagramStyle.C4),
+                        CanvasOptions.defaults()
+                );
     }
 }
